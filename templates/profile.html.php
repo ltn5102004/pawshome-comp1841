@@ -22,6 +22,12 @@
 				<label for="email">Email <span class="required" aria-hidden="true">*</span></label>
 				<input type="email" id="email" name="email" value="<?=html($user['email'])?>" required maxlength="255" autocomplete="email">
 			</div>
+			<?php // LIM-02: the current password is checked only when the email address is changed ?>
+			<div class="field">
+				<label for="details-current">Current password</label>
+				<input type="password" id="details-current" name="current" autocomplete="current-password" aria-describedby="details-current-hint">
+				<p class="hint" id="details-current-hint">Only needed if you change your email address.</p>
+			</div>
 			<button class="btn" type="submit">Save details</button>
 		</form>
 	</section>

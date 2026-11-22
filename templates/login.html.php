@@ -24,5 +24,7 @@
 		</div>
 		<button class="btn btn-block" type="submit">Log in</button>
 	</form>
+	<?php // LIM-03: link to the password reset (forgotpassword.php) ?>
+	<p class="center"><a href="forgotpassword.php">Forgot your password?</a></p>
 	<p class="center">New to PawsHome? <a href="register.php">Create an account</a></p>
 </section>

@@ -381,3 +381,17 @@ INSERT INTO adoptionrequest (id, message, requestdate, status, interviewdate, de
 
 INSERT INTO message (id, name, email, subject, body, datesent) VALUES
 (1, 'Jane Smith', 'jane@example.com', 'Volunteering', 'Hello, can I volunteer at one of the shelters at weekends?', '2026-10-22 10:15:00');
+
+-- LIM-03 (22 Nov 2026): password reset links (see database/add_passwordreset.sql for notes)
+CREATE TABLE IF NOT EXISTS `passwordreset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `userid` int(11) NOT NULL,
+  `tokenhash` char(64) NOT NULL,
+  `expires` datetime NOT NULL,
+  `used` tinyint(1) NOT NULL DEFAULT 0,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tokenhash` (`tokenhash`),
+  KEY `userid` (`userid`),
+  CONSTRAINT `passwordreset_user` FOREIGN KEY (`userid`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

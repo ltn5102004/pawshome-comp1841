@@ -50,7 +50,8 @@
 							<li><a href="requests.php" <?=$page == 'requests.php' ? 'aria-current="page"' : ''?>>Requests<?php if ($incoming['new']): ?> <span class="count-badge" aria-label="<?=html($incoming['new'])?> new"><?=html($incoming['new'])?></span><?php endif; ?></a></li>
 						<?php endif; ?>
 						<li><a href="myaccount.php" <?=in_array($page, ['myaccount.php', 'profile.php']) ? 'aria-current="page"' : ''?>>My account</a></li>
-						<li><a href="logout.php">Log out</a></li>
+						<?php // Log out is a POST form with the CSRF token (LIM-01), styled like the other menu links ?>
+						<li><form action="logout.php" method="post" class="logout-form"><?=csrfField()?><button class="link-button" type="submit">Log out</button></form></li>
 					<?php else: ?>
 						<li><a href="login.php" <?=$page == 'login.php' ? 'aria-current="page"' : ''?>>Log in</a></li>
 						<li><a class="btn btn-small" href="register.php" <?=$page == 'register.php' ? 'aria-current="page"' : ''?>>Register</a></li>

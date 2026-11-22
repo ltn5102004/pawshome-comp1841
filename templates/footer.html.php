@@ -31,7 +31,7 @@
 					<?php if (isAdmin()): ?>
 						<li><a href="admin/index.php">Admin area</a></li>
 					<?php endif; ?>
-					<li><a href="logout.php">Log out</a></li>
+					<li><form action="logout.php" method="post" class="logout-form"><?=csrfField()?><button class="link-button" type="submit">Log out</button></form></li>
 				<?php else: ?>
 					<li><a href="login.php">Log in</a></li>
 					<li><a href="register.php">Create an account</a></li>

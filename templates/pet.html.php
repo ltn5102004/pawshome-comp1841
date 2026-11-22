@@ -127,9 +127,12 @@
 		<p><?=html($pet['name'])?> has already found a home. <a href="pets.php?status=Available">See pets that are still available</a>.</p>
 	<?php elseif (!isLoggedIn()): ?>
 		<p><a href="login.php">Log in</a> or <a href="register.php">create a free account</a> to send an adoption request.</p>
-	<?php elseif ($alreadyRequested): ?>
-		<p>You have already sent a request for <?=html($pet['name'])?>. You can follow it on <a href="myaccount.php">your account page</a>.</p>
+	<?php elseif ($myRequest && $myRequest['status'] != 'Rejected'): ?>
+		<p>You have already sent a request for <?=html($pet['name'])?>. You can follow it, or withdraw it, on <a href="myaccount.php#my-requests">your account page</a>.</p>
 	<?php else: ?>
+		<?php if ($myRequest): ?>
+			<p class="alert alert-warning" role="status">Your earlier request for <?=html($pet['name'])?> was not successful. You can send a new one below.</p>
+		<?php endif; ?>
 		<?php if ($profile): ?>
 			<p class="profile-note">Your adopter profile will be sent with this request:
 				<?=html($profile['hometype'])?> &middot; <?=html($profile['experience'])?> &middot; budget <?=html($profile['budget'])?>.

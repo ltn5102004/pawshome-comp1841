@@ -1860,3 +1860,17 @@ h1 { font-weight: 800; }
 }
 .role-hero .role-hero-meta, .role-hero .meta { color: var(--ink-700); }
 .tile { border-bottom-width: 4px; }
+
+/* ==========================================================
+   LOG OUT BUTTON (LIM-01) - logging out is a small POST form, so the button is made to look exactly like
+   the links next to it in the main menu, the footer and the admin sidebar.
+   Source: MDN Web Docs (no date) <button>: The Button element; appearance. https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button
+   ========================================================== */
+.logout-form { margin: 0; }
+.link-button { background: none; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
+.main-nav .link-button { display: block; width: 100%; color: var(--color-text); padding: 0.5rem 0.9rem; border-radius: 999px; font-weight: 500; }
+.main-nav .link-button:hover { background: var(--color-cta-soft); }
+.footer-col .link-button { color: var(--color-on-dark); text-decoration: none; }
+.footer-col .link-button:hover { color: var(--color-pop); text-decoration: underline; }
+.admin-nav .link-button { display: flex; align-items: center; gap: 0.7rem; width: 100%; padding: 0.6rem 0.75rem; border-radius: 8px; color: var(--admin-side-text); font-weight: 500; }
+.admin-nav .link-button:hover { background: var(--overlay-1); color: var(--color-on-color); }

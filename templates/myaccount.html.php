@@ -162,6 +162,14 @@ ob_start(); ?>
 							<span class="badge badge-<?=strtolower(html($request['status']))?>"><?=html($request['status'])?></span></h3>
 						<p class="meta">Sent <?=formatDate($request['requestdate'])?> &middot; &ldquo;<?=html($request['message'])?>&rdquo;</p>
 						<?php include __DIR__ . '/requesttracker.html.php'; ?>
+						<?php // LIM-04: the adopter can withdraw the request (not once the pet has been adopted) ?>
+						<?php if (!($request['status'] == 'Approved' && $request['petstatus'] == 'Adopted')): ?>
+							<form action="withdrawrequest.php" method="post" class="inline-form" data-confirm="Withdraw your request for <?=html($request['petname'])?>?">
+								<?=csrfField()?>
+								<input type="hidden" name="id" value="<?=html($request['id'])?>">
+								<button class="btn btn-small btn-outline" type="submit">Withdraw request<span class="visually-hidden"> for <?=html($request['petname'])?></span></button>
+							</form>
+						<?php endif; ?>
 					</div>
 				</article>
 			<?php endforeach; ?>

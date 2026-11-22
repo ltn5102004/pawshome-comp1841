@@ -20,8 +20,17 @@ try {
 		$form = getValue($_POST, 'form');
 
 		if ($form == 'details') {
+			$oldEmail = $user['email'];
 			$user['name'] = getValue($_POST, 'name');
 			$user['email'] = getValue($_POST, 'email');
+			// LIM-02 fix (22 Nov 2026): a new email address needs the current password, so someone who finds
+			// the computer still logged in cannot take over the account by changing its email.
+			// Source: OWASP (no date) Authentication Cheat Sheet - "Require re-authentication for sensitive features".
+			//         https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+			$emailChanged = strcasecmp($oldEmail, $user['email']) != 0;
+			if ($emailChanged && !password_verify(getValue($_POST, 'current', '', false), $user['password'])) {
+				$detailErrors[] = 'To change your email address, please enter your current password.';
+			}
 
 			if ($user['name'] == '' || strlen($user['name']) > 100) {
 				$detailErrors[] = 'Please enter your name (up to 100 characters).';
@@ -38,6 +47,12 @@ try {
 
 			if (empty($detailErrors)) {
 				update($pdo, 'user', 'id', ['id' => $user['id'], 'name' => $user['name'], 'email' => $user['email']]);
+				if ($emailChanged) {
+					// tell the OLD address, so the real owner notices if it was not them
+					sendEmail($oldEmail, 'Your email address was changed',
+						"Hello " . $user['name'] . ",\n\nThe email address of your PawsHome account was changed to " . $user['email'] . ".\n"
+						. "If you did not do this, contact the administrator at " . ADMIN_EMAIL . " straight away.\n");
+				}
 				setFlash('Your details have been updated.');
 				redirect('myaccount.php');
 			}

@@ -26,6 +26,26 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 define('ADMIN_EMAIL', 'admin@pawshome.test');   // placeholder for the public repo - put the real admin address here when deploying
 // Folder where pet images are saved (must be writable by the web server)
 define('UPLOAD_DIR', __DIR__ . '/../images/pets/');
+// Address of the site, used to build links inside emails (password reset). It is fixed here on purpose:
+// building it from the Host header would let an attacker send people a reset link to his own site.
+// Source: OWASP (no date) Forgot Password Cheat Sheet ("do not rely on the Host header"). https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html
+define('SITE_URL', 'http://localhost/comp1841/coursework');
+// XAMPP on a laptop has no mail server, so every email is ALSO written to this file (blocked from the web by
+// mail-log/.htaccess). On a real server mail() delivers it and the file is only a copy.
+define('MAIL_LOG', __DIR__ . '/../mail-log/outbox.log');
+
+##OUTGOING EMAIL - one helper for every email the site sends##
+// Source: PHP Group (no date) mail, PHP Manual. https://www.php.net/manual/en/function.mail.php
+//         PHP Group (no date) file_put_contents (FILE_APPEND, LOCK_EX), PHP Manual. https://www.php.net/manual/en/function.file-put-contents.php
+function sendEmail($to, $subject, $body) {
+	// line breaks in the subject would let someone add extra mail headers (header injection)
+	$subject = 'PawsHome: ' . str_replace(["\r", "\n"], ' ', $subject);
+	$sent = filter_var($to, FILTER_VALIDATE_EMAIL) ? @mail($to, $subject, $body, 'From: ' . ADMIN_EMAIL) : false;
+	$entry = '=== ' . date('Y-m-d H:i:s') . ($sent ? ' (sent)' : ' (not sent - no mail server)') . "\n"
+		. 'To: ' . $to . "\nSubject: " . $subject . "\n\n" . $body . "\n\n";
+	@file_put_contents(MAIL_LOG, $entry, FILE_APPEND | LOCK_EX);
+	return $sent;
+}
 
 // Source: OWASP (no date) Cross-Site Request Forgery Prevention Cheat Sheet (synchronizer token pattern);
 //         PHP Group (no date) random_bytes, bin2hex and hash_equals, PHP Manual.

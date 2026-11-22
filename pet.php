@@ -21,7 +21,8 @@ try {
 		$title = $pet['name'];
 		$output = loadTemplate('pet.html.php', [
 			'pet' => $pet,
-			'alreadyRequested' => isLoggedIn() && hasRequested($pdo, $pet['id'], currentUserId()),
+			// LIM-04: the person's own earlier request (a rejected one can be sent again)
+			'myRequest' => isLoggedIn() ? findUserRequest($pdo, $pet['id'], currentUserId()) : false,
 			'favouriteIds' => isLoggedIn() ? favouriteIds($pdo, currentUserId()) : [],
 			'profile' => isLoggedIn() ? findAdopterProfile($pdo, currentUserId()) : false
 		]);

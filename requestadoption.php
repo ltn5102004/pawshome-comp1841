@@ -37,10 +37,17 @@ try {
 
 	if ($pet['status'] == 'Adopted') {
 		setFlash($pet['name'] . ' has already been adopted.', 'error');
-	} elseif (hasRequested($pdo, $pet['id'], currentUserId())) {
+	} elseif (($earlier = findUserRequest($pdo, $pet['id'], currentUserId())) && $earlier['status'] != 'Rejected') {
 		setFlash('You have already sent a request for ' . $pet['name'] . '.', 'error');
 	} elseif (strlen($message) < 10 || strlen($message) > 1000) {
 		setFlash('Your message must be between 10 and 1000 characters.', 'error');
+	} elseif ($earlier) {
+		// LIM-04 fix (22 Nov 2026): a REJECTED adopter may try again. The same row is reused (UNIQUE petid + userid)
+		// and starts again as "New" with the new message and today's date.
+		update($pdo, 'adoptionrequest', 'id', ['id' => $earlier['id'], 'message' => $message, 'requestdate' => new DateTime(),
+			'status' => 'New', 'interviewdate' => null, 'decisiondate' => null]);
+		notifyNewRequest($pdo, $pet);
+		setFlash('Your new request for ' . $pet['name'] . ' has been sent. ' . (empty($pet['shelterid']) ? 'The owner' : 'The shelter') . ' will look at it again.');
 	} else {
 		try {
 			insert($pdo, 'adoptionrequest', [
@@ -49,6 +56,7 @@ try {
 				'petid' => $pet['id'],
 				'userid' => currentUserId()
 			]);
+			notifyNewRequest($pdo, $pet);
 			setFlash('Your request for ' . $pet['name'] . ' has been sent. ' . (empty($pet['shelterid']) ? 'The owner' : 'The shelter') . ' will be in touch.');
 		} catch (PDOException $e) {
 			// The database allows only one request per person per pet (unique key onerequestperpet). This happens

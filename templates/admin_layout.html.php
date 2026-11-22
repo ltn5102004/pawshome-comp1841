@@ -66,7 +66,7 @@ $menu = [
 				</ul>
 				<ul class="admin-nav-bottom">
 					<li><a href="../index.php"><?=icon('site')?><span class="admin-nav-label">View the site</span></a></li>
-					<li><a href="../logout.php"><?=icon('logout')?><span class="admin-nav-label">Log out</span></a></li>
+					<li><form action="../logout.php" method="post" class="logout-form"><?=csrfField()?><button class="link-button" type="submit"><?=icon('logout')?><span class="admin-nav-label">Log out</span></button></form></li>
 				</ul>
 				<p class="admin-user">Signed in as<br><strong><?=html(currentUser()['name'] ?? '')?></strong></p>
 			</nav>

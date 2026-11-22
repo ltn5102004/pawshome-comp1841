@@ -14,8 +14,17 @@ A PHP PDO / MySQL CRUD web application built on top of the lab "Jokes" system
    `chmod 777 images/pets` (Mac: Get Info → Sharing & Permissions → everyone Read & Write).
 5. Visit `http://localhost/comp1841/coursework/index.php`
 
+   If you imported an older copy of the database, also import `database/add_passwordreset.sql` (adds the `passwordreset` table).
+6. Make `mail-log` writable too (`chmod 777 mail-log`): emails are written there on a computer without a mail server.
+
 If your MySQL user/password are not `root` / empty, edit `includes/DatabaseConnection.php`.
 Contact emails go to `ADMIN_EMAIL` in `includes/Functions.php` (a placeholder, `admin@pawshome.test`; set the real address when deploying).
+
+### Emails on localhost (password reset, notifications)
+XAMPP has no mail server, so every email the site sends (password-reset links, adoption-request notifications,
+"your email was changed") is also written to `mail-log/outbox.log`. The folder is blocked from the browser
+(`mail-log/.htaccess`). To try **Forgot your password?**: ask for a link on the log-in page, open
+`mail-log/outbox.log` in a text editor and paste the `resetpassword.php?token=...` link into the browser.
 
 ## Test accounts
 
@@ -37,7 +46,9 @@ requests.php                                    requests for my pets (private ow
 favourite.php                                   save / unsave a pet (favourite table, many-to-many)
 profile.php                                     edit name / email, change password, delete my own account
 adopterprofile.php                              adopter profile (home, experience, budget) sent with requests
-login.php, register.php, logout.php             accounts (password_hash, sessions)
+login.php, register.php, logout.php             accounts (password_hash, sessions); log out is a POST form
+forgotpassword.php, resetpassword.php           "Forgot your password?" - one-time link, 30 minutes (passwordreset table)
+withdrawrequest.php                             an adopter withdraws their own adoption request
 contact.php                                     contact form → mail() + saved to DB
 admin/                                          admin area (dashboard, review queue, pets, requests,
                                                 shelters, species, users, messages)
@@ -49,6 +60,8 @@ templates/                                      HTML templates (*.html.php), inc
                                                 trustbadge.html.php and requesttracker.html.php
 css/style.css, js/main.js                       responsive design, front-end validation
 database/petadopt.sql                           database export
+database/add_passwordreset.sql                  adds the passwordreset table to an older database
+mail-log/                                       emails written on localhost (outbox.log, blocked from the web)
 docs/                                           ERD (erd.dbml for dbdiagram.io, erd.mmd for Mermaid), navigation diagram, colour system (colour-system.md)
 ```
 
@@ -94,13 +107,17 @@ Harvard style, alphabetical by author. Accessed dates should be the date the pag
 - MDN Web Docs (no date) *HTML attribute: required*. Available at: https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required (Accessed: 9 November 2026).
 - MDN Web Docs (no date) *HTML table accessibility*. Available at: https://developer.mozilla.org/en-US/docs/Learn/HTML/Tables/Advanced (Accessed: 3 November 2026).
 - MDN Web Docs (no date) *HTMLElement: hidden property*. Available at: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/hidden (Accessed: 9 November 2026).
+- MDN Web Docs (no date) *hidden global attribute*. Available at: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden (Accessed: 22 November 2026).
 - MDN Web Docs (no date) *HTMLFormElement*. Available at: https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement (Accessed: 6 November 2026).
 - MDN Web Docs (no date) *linear-gradient()*. Available at: https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient (Accessed: 9 November 2026).
 - MDN Web Docs (no date) *::selection*. Available at: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::selection (Accessed: 9 November 2026).
 - MDN Web Docs (no date) *<span>: The Content Span element*. Available at: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/span (Accessed: 9 November 2026).
+- MDN Web Docs (no date) *<button>: The Button element*. Available at: https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button (Accessed: 22 November 2026).
 - MDN Web Docs (no date) *position*. Available at: https://developer.mozilla.org/en-US/docs/Web/CSS/position (Accessed: 6 November 2026).
+- MDN Web Docs (no date) *POST request method*. Available at: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods/POST (Accessed: 22 November 2026).
 - MDN Web Docs (no date) *prefers-reduced-motion*. Available at: https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion (Accessed: 3 November 2026).
 - MDN Web Docs (no date) *radial-gradient()*. Available at: https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient (Accessed: 9 November 2026).
+- MDN Web Docs (no date) *Referrer-Policy header*. Available at: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy (Accessed: 22 November 2026).
 - MDN Web Docs (no date) *SubmitEvent: submitter property*. Available at: https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent/submitter (Accessed: 6 November 2026).
 - MDN Web Docs (no date) *SVG: Paths*. Available at: https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths (Accessed: 9 November 2026).
 - MDN Web Docs (no date) *Using CSS custom properties (variables)*. Available at: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties (Accessed: 3 November 2026).
@@ -116,6 +133,7 @@ Harvard style, alphabetical by author. Accessed dates should be the date the pag
 - MySQL (no date) *MySQL 8.0 Reference Manual: JOIN Clause*. Available at: https://dev.mysql.com/doc/refman/8.0/en/join.html (Accessed: 3 November 2026).
 - MySQL (no date) *MySQL 8.0 Reference Manual: SELECT Statement* (JOIN, GROUP BY, LIMIT / OFFSET). Available at: https://dev.mysql.com/doc/refman/8.0/en/select.html (Accessed: 3 November 2026).
 - OWASP (no date) *Authentication Cheat Sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html (Accessed: 6 November 2026).
+- OWASP (no date) *Forgot Password Cheat Sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html (Accessed: 22 November 2026).
 - OWASP (no date) *Authorization Cheat Sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html (Accessed: 6 November 2026).
 - OWASP (no date) *Cross-Site Request Forgery Prevention Cheat Sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html (Accessed: 3 November 2026).
 - OWASP (no date) *Input Validation Cheat Sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html (Accessed: 3 November 2026).
@@ -123,10 +141,13 @@ Harvard style, alphabetical by author. Accessed dates should be the date the pag
 - OWASP (no date) *Unvalidated Redirects and Forwards Cheat Sheet*. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html (Accessed: 3 November 2026).
 - Pantone (2025) *PANTONE 11-4201 Cloud Dancer: Color of the Year 2026*. Available at: https://www.pantone.com/color-of-the-year/2026 (Accessed: 9 November 2026).
 - PHP Group (no date) *header*, PHP Manual (the Location header sends a 302 status). Available at: https://www.php.net/manual/en/function.header.php (Accessed: 22 November 2026). (requireCsrfToken fix, DEF-01)
+- PHP Group (no date) *file_put_contents* (FILE_APPEND, LOCK_EX). Available at: https://www.php.net/manual/en/function.file-put-contents.php (Accessed: 22 November 2026).
+- PHP Group (no date) *hash* (SHA-256). Available at: https://www.php.net/manual/en/function.hash.php (Accessed: 22 November 2026).
 - PHP Group (no date) *mail - Send mail* (Example #2 Sending mail with extra headers). Available at: https://www.php.net/manual/en/function.mail.php (Accessed: 3 November 2026).
 - PHP Group (no date) *mb_substr* and *mb_strtoupper*. Available at: https://www.php.net/manual/en/function.mb-substr.php (Accessed: 9 November 2026).
 - PHP Group (no date) *ob_start - Turn on output buffering*. Available at: https://www.php.net/manual/en/function.ob-start.php (Accessed: 9 November 2026).
 - PHP Group (no date) *PDO::beginTransaction*. Available at: https://www.php.net/manual/en/pdo.begintransaction.php (Accessed: 9 November 2026).
+- PHP Group (no date) *random_bytes* and *bin2hex*. Available at: https://www.php.net/manual/en/function.random-bytes.php (Accessed: 22 November 2026).
 - PHP Group (no date) *PHP Manual* (PDO, password_hash, password_verify, filter_var, htmlspecialchars, filemtime, http_build_query, sessions). Available at: https://www.php.net/manual/en/ (Accessed: 3 November 2026).
 - PHP Group (no date) *session_destroy - Destroys all data registered to a session* (Example #1, used for logout.php). Available at: https://www.php.net/manual/en/function.session-destroy.php (Accessed: 3 November 2026).
 - PHP Group (no date) *session_set_cookie_params*. Available at: https://www.php.net/manual/en/function.session-set-cookie-params.php (Accessed: 6 November 2026).

@@ -355,6 +355,51 @@ function clearFailedLogins($pdo, $email, $ip) {
 	query($pdo, 'DELETE FROM loginattempt WHERE email = :email AND ip = :ip', [':email' => strtolower($email), ':ip' => $ip]);
 }
 
+##PASSWORD RESET (LIM-03)##
+// The link holds a long random token; only its SHA-256 hash is saved. A link expires after 30 minutes and works once.
+// Source: OWASP (no date) Forgot Password Cheat Sheet. https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html
+//         PHP Group (no date) random_bytes, bin2hex and hash, PHP Manual. https://www.php.net/manual/en/function.random-bytes.php
+//         https://www.php.net/manual/en/function.hash.php
+define('RESET_MINUTES', 30);
+define('RESET_MAX_PER_HOUR', 3);   // stops someone flooding a person's inbox with reset emails
+
+// Makes a new reset link for the user and returns the token (the plain token is only ever put in the email)
+function createPasswordReset($pdo, $userId) {
+	// an older link that was not used yet stops working: only the newest link is valid
+	query($pdo, 'DELETE FROM passwordreset WHERE userid = :userid AND used = 0', [':userid' => $userId]);
+	$token = bin2hex(random_bytes(32));
+	insert($pdo, 'passwordreset', [
+		'userid' => $userId,
+		'tokenhash' => hash('sha256', $token),
+		'expires' => new DateTime('+' . RESET_MINUTES . ' minutes'),
+		'created' => new DateTime()
+	]);
+	return $token;
+}
+
+function resetsInLastHour($pdo, $userId) {
+	return query($pdo, 'SELECT COUNT(*) FROM passwordreset WHERE userid = :userid AND created > :since',
+		[':userid' => $userId, ':since' => (new DateTime('-1 hour'))->format('Y-m-d H:i:s')])->fetch(PDO::FETCH_NUM)[0];
+}
+
+// The reset row (with the user's email) for a token that is unused and not expired, or false
+function findValidReset($pdo, $token) {
+	if (!is_string($token) || !preg_match('/^[a-f0-9]{64}$/', $token)) {
+		return false;
+	}
+	return query($pdo, 'SELECT passwordreset.*, user.email, user.name FROM passwordreset
+		INNER JOIN user ON user.id = passwordreset.userid
+		WHERE tokenhash = :hash AND used = 0 AND expires > :now',
+		[':hash' => hash('sha256', $token), ':now' => (new DateTime())->format('Y-m-d H:i:s')])->fetch();
+}
+
+// Saves the new password and closes every reset link of that user
+function finishPasswordReset($pdo, $reset, $newPassword) {
+	update($pdo, 'user', 'id', ['id' => $reset['userid'], 'password' => password_hash($newPassword, PASSWORD_DEFAULT)]);
+	query($pdo, 'UPDATE passwordreset SET used = 1 WHERE userid = :userid', [':userid' => $reset['userid']]);
+	query($pdo, 'DELETE FROM loginattempt WHERE email = :email', [':email' => strtolower($reset['email'])]);
+}
+
 ##USER FUNCTIONS##
 
 function findUserByEmail($pdo, $email) {
@@ -563,6 +608,42 @@ function freeReservedPet($pdo, $petId) {
 
 // Moves a request to another stage and keeps the pet's status in step. Returns the message to show.
 // The caller must already have checked canHandleRequest().
+##EMAIL NOTIFICATIONS (LIM-05)##
+// The people involved hear about a request by email (sendEmail() in includes/Functions.php; on localhost the
+// email is written to mail-log/outbox.log). Source: PHP Group (no date) mail, PHP Manual. https://www.php.net/manual/en/function.mail.php
+
+// New request: tell the shelter (its public email) and the member who listed the pet
+function notifyNewRequest($pdo, $pet) {
+	$to = [];
+	if (!empty($pet['shelterid'])) {
+		$shelter = findById($pdo, 'shelter', 'id', $pet['shelterid']);
+		if ($shelter) $to[] = $shelter['email'];
+	}
+	if (!empty($pet['userid'])) {
+		$lister = findById($pdo, 'user', 'id', $pet['userid']);
+		if ($lister) $to[] = $lister['email'];
+	}
+	foreach (array_unique(array_map('strtolower', $to)) as $email) {
+		sendEmail($email, 'New adoption request for ' . $pet['name'],
+			"There is a new adoption request for " . $pet['name'] . ".\nOpen PawsHome to answer it: " . SITE_URL . "/requests.php\n");
+	}
+}
+
+// A request moved to another stage: tell the adopter what it means for them
+function notifyRequestStage($request, $stage) {
+	$texts = [
+		'Interviewing' => 'would like to talk to you about adopting ' . $request['petname'] . '. They will contact you to arrange an interview.',
+		'Approved' => 'has approved your request to adopt ' . $request['petname'] . '! They will contact you to arrange the adoption.',
+		'Rejected' => 'could not accept your request to adopt ' . $request['petname'] . ' this time. You can send a new request from the pet\'s page.',
+		'New' => 'has moved your request for ' . $request['petname'] . ' back to "New". It will be looked at again.'
+	];
+	if (isset($texts[$stage])) {
+		sendEmail($request['useremail'], 'Your adoption request for ' . $request['petname'] . ': ' . $stage,
+			"Hello " . $request['username'] . ",\n\n" . (empty($request['petshelterid']) ? 'The owner' : 'The shelter') . ' ' . $texts[$stage]
+			. "\n\nFollow your requests here: " . SITE_URL . "/myaccount.php#my-requests\n");
+	}
+}
+
 function moveRequest($pdo, $request, $stage) {
 	// The days are saved so the progress bar can show what REALLY happened:
 	//   Interviewing  the interview day is saved the first time (it is kept if the interview already took place)
@@ -588,6 +669,7 @@ function moveRequest($pdo, $request, $stage) {
 		// The approval was withdrawn: free the pet again unless another request for it is still approved
 		freeReservedPet($pdo, $request['petid']);
 	}
+	notifyRequestStage($request, $stage);   // LIM-05: the adopter gets an email
 	return 'The request for ' . $request['petname'] . ' has been moved to "' . $stage . '".';
 }
 
@@ -605,6 +687,12 @@ function requestsByUser($pdo, $userId) {
 function hasApprovedRequest($pdo, $petId) {
 	$query = query($pdo, "SELECT COUNT(*) FROM adoptionrequest WHERE petid = :petid AND status = 'Approved'", [':petid' => $petId]);
 	return $query->fetch(PDO::FETCH_NUM)[0] > 0;
+}
+
+// The request one person sent for one pet (there is at most one: UNIQUE petid + userid), or false
+function findUserRequest($pdo, $petId, $userId) {
+	return query($pdo, 'SELECT * FROM adoptionrequest WHERE petid = :petid AND userid = :userid',
+		[':petid' => $petId, ':userid' => $userId])->fetch();
 }
 
 function hasRequested($pdo, $petId, $userId) {
