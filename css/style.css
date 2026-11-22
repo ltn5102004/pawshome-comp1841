@@ -153,6 +153,13 @@ body {
 	min-height: 100vh;
 }
 
+/* Anything with the hidden attribute stays hidden, even when a rule below gives it a display value
+   (img { display: block } was showing the empty photo preview's alt text on the add-pet form).
+   Source: MDN Web Docs (no date) hidden global attribute. https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden */
+[hidden] {
+	display: none !important;
+}
+
 img {
 	max-width: 100%;
 	height: auto;
