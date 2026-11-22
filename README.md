@@ -62,7 +62,7 @@ css/style.css, js/main.js                       responsive design, front-end val
 database/petadopt.sql                           database export
 database/add_passwordreset.sql                  adds the passwordreset table to an older database
 mail-log/                                       emails written on localhost (outbox.log, blocked from the web)
-docs/                                           ERD (erd.drawio for draw.io, erd.dbml for dbdiagram.io, erd.mmd for Mermaid), navigation diagram, colour system (colour-system.md)
+docs/                                           navigation.drawio (sitemap for draw.io), ERD (erd.drawio for draw.io, erd.dbml for dbdiagram.io, erd.mmd for Mermaid), navigation diagram, colour system (colour-system.md)
 ```
 
 ## References
