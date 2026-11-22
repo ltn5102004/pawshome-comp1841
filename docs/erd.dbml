@@ -1,0 +1,127 @@
+// PawsHome - Entity-Relationship Diagram (database: petadopt, 9 tables)
+// Written from the live schema (SHOW CREATE TABLE, 22 Nov 2026).
+// How to draw: open https://dbdiagram.io/d , paste this whole file, then Export -> PNG for the report (Figure 3).
+// Source: dbdiagram.io (no date) DBML - Database Markup Language documentation. https://dbml.dbdiagram.io/docs/
+
+Project PawsHome {
+  database_type: 'MySQL'
+  Note: 'Pet adoption board - COMP1841 coursework'
+}
+
+Table user {
+  id int [pk, increment]
+  name varchar(100) [not null]
+  email varchar(255) [not null, unique]
+  password varchar(255) [not null, note: 'bcrypt hash (password_hash)']
+  role enum('member','admin') [not null, default: 'member']
+  shelterid int [null, note: 'set = shelter staff']
+  datejoined date [not null]
+}
+
+Table shelter {
+  id int [pk, increment]
+  name varchar(100) [not null]
+  city varchar(100) [not null]
+  email varchar(255) [not null]
+  phone varchar(30) [not null]
+  verified tinyint(1) [not null, default: 0]
+}
+
+Table species {
+  id int [pk, increment]
+  name varchar(50) [not null, unique]
+}
+
+Table pet {
+  id int [pk, increment]
+  name varchar(50) [not null]
+  age int [not null]
+  gender enum('Male','Female') [not null]
+  description text [not null]
+  image varchar(255)
+  imagecredit varchar(255)
+  imagesource varchar(500)
+  breed varchar(80)
+  size enum('Small','Medium','Large') [not null, default: 'Medium']
+  energy enum('Low','Medium','High') [not null, default: 'Medium']
+  vaccinated tinyint(1) [not null, default: 0]
+  neutered tinyint(1) [not null, default: 0]
+  healthnotes varchar(500)
+  goodwithkids tinyint(1) [not null, default: 0]
+  goodwithdogs tinyint(1) [not null, default: 0]
+  goodwithcats tinyint(1) [not null, default: 0]
+  apartmentok tinyint(1) [not null, default: 0]
+  status enum('Available','Reserved','Adopted') [not null, default: 'Available']
+  approval enum('Pending','Approved','Rejected') [not null, default: 'Pending']
+  reviewnote varchar(255)
+  dateadded date [not null]
+  speciesid int [not null]
+  shelterid int [null, note: 'NULL = private rehoming']
+  city varchar(100) [note: 'only for private rehoming']
+  userid int [null, note: 'who listed the pet']
+}
+
+Table adoptionrequest {
+  id int [pk, increment]
+  message text [not null]
+  requestdate date [not null]
+  status enum('New','Interviewing','Approved','Rejected') [not null, default: 'New']
+  interviewdate date
+  decisiondate date
+  petid int [not null]
+  userid int [not null]
+
+  indexes {
+    (petid, userid) [unique, name: 'onerequestperpet']
+  }
+}
+
+Table adopterprofile {
+  userid int [pk, note: 'PK + FK = one profile per user (1:1)']
+  hometype enum('House with garden','House without garden','Flat / apartment') [not null]
+  householdagrees tinyint(1) [not null, default: 0]
+  experience enum('First-time owner','Some experience','Experienced owner') [not null]
+  otherpets varchar(255)
+  budget enum('Under £50','£50-£100','Over £100') [not null]
+  updated datetime [not null]
+}
+
+Table favourite {
+  userid int [pk]
+  petid int [pk]
+  datesaved datetime [not null]
+  Note: 'junction table: user M:N pet'
+}
+
+Table message {
+  id int [pk, increment]
+  name varchar(100) [not null]
+  email varchar(255) [not null]
+  subject varchar(150) [not null]
+  body text [not null]
+  datesent datetime [not null]
+  Note: 'contact form (no foreign key)'
+}
+
+Table loginattempt {
+  id int [pk, increment]
+  email varchar(255) [not null]
+  ip varchar(45) [not null]
+  attempted datetime [not null]
+  Note: 'login throttle (no foreign key)'
+
+  indexes {
+    (email, ip, attempted) [name: 'lookup']
+  }
+}
+
+// ---------- relationships (> many-to-one, - one-to-one) ----------
+Ref: pet.speciesid > species.id [delete: restrict]
+Ref: pet.shelterid > shelter.id [delete: restrict]
+Ref: pet.userid > user.id [delete: set null]
+Ref: user.shelterid > shelter.id [delete: set null]
+Ref: adoptionrequest.petid > pet.id [delete: cascade]
+Ref: adoptionrequest.userid > user.id [delete: cascade]
+Ref: favourite.userid > user.id [delete: cascade]
+Ref: favourite.petid > pet.id [delete: cascade]
+Ref: adopterprofile.userid - user.id [delete: cascade]

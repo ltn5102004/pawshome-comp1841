@@ -1,0 +1,1846 @@
+/* ==========================================================
+   PawsHome - main stylesheet
+   Mobile first: base styles are for phones, media queries add
+   the wider layouts. Colours checked for WCAG AA contrast.
+   ========================================================== */
+
+/* ==========================================================
+   COLOUR SYSTEM - "Cloud & Ink" (youthful palette), built from colour theory in three layers
+   ----------------------------------------------------------
+   Layer 1  PRIMITIVES in hsl(): each family keeps one hue. Tints (+white) only raise L, shades (+black)
+            only lower L, tones (+grey) lower S - so hover / soft states are predictable.
+   Layer 2  SEMANTIC TOKENS (--color-success, --color-cta ...): what a colour MEANS. Components use only these.
+   Layer 3  COMPONENTS further down the file.
+
+   Trend: the base is a soft "cloud" off-white (Pantone's Colour of the Year 2026 is a white, Cloud Dancer) with
+   near-black "ink" text and black pill buttons, like fashion sites. Personality comes from pastels and two bold pops.
+   Harmony: electric violet (255 deg) and acid lime (78 deg) are COMPLEMENTARY (177 deg apart) - the violet is the
+   call-to-action, the lime marks counts that need you. The pastels (lavender, pink, peach, butter, sky, mint) are TINTS
+   with the same high lightness, so they sit together calmly. Ink and greys are TONES of the violet hue, so even the
+   "black" belongs to the palette.
+   Psychology: mint green = success, sky blue = information / trust (shelter staff), butter yellow = waiting,
+   cherry red = refused / danger.
+   60-30-10: ~60% cloud white, ~30% ink (text, normal buttons, admin sidebar, footer) plus pastel tints,
+   ~10% violet for the ONE main action of a page and lime for attention counts.
+   Accessibility: every pair checked with the WCAG 2.2 formula (table in docs/colour-system.md);
+   colour is never the only signal (badges have words, ticks / crosses, icons).
+
+   Sources:
+   Pantone (2025) PANTONE 11-4201 Cloud Dancer - Color of the Year 2026. https://www.pantone.com/color-of-the-year/2026
+   W3C (2023) WCAG 2.2 Understanding 1.4.1 Use of Color, 1.4.3 Contrast (Minimum), 1.4.11 Non-text Contrast.
+     https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html
+   Google (no date) Material Design 3 - Color roles; Design tokens. https://m3.material.io/styles/color/roles
+   MDN Web Docs (no date) hsl() CSS function; Using CSS custom properties. https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/hsl
+   Gordon, K. (2021) Using Color to Enhance Your Design, Nielsen Norman Group. https://www.nngroup.com/articles/color-enhance-design/
+   Raikwar, H. (2023) Master UI design: Enhance aesthetics with the 60-30-10 rule, LogRocket. https://blog.logrocket.com/ux-design/60-30-10-rule
+   WebAIM (no date) Contrast and Color Accessibility. https://webaim.org/articles/contrast/
+   ========================================================== */
+:root {
+	/* ----- Layer 1: primitives ----- */
+	--ink-950: hsl(250 24% 9%);   --ink-900: hsl(250 22% 11%);  --ink-800: hsl(250 18% 20%);
+	--ink-700: hsl(250 12% 30%);  --ink-600: hsl(250 8% 38%);   --ink-400: hsl(250 6% 52%);
+	--cloud-0: hsl(40 40% 99%);   --cloud-50: hsl(40 22% 95.5%); --cloud-100: hsl(40 18% 92%); --cloud-200: hsl(40 14% 86%);
+	--violet-50: hsl(255 100% 97%); --violet-100: hsl(255 95% 93%); --violet-200: hsl(255 90% 86%);
+	--violet-500: hsl(255 88% 63%); --violet-600: hsl(255 75% 55%); --violet-700: hsl(255 62% 45%);
+	--lime-100: hsl(78 85% 90%);  --lime-400: hsl(78 88% 62%);  --lime-800: hsl(80 90% 22%);
+	--pink-50: hsl(340 100% 97%); --pink-100: hsl(340 95% 92%); --pink-600: hsl(340 80% 52%); --pink-700: hsl(340 70% 40%);
+	--peach-50: hsl(22 100% 96%); --peach-100: hsl(22 100% 90%); --peach-600: hsl(15 85% 50%); --peach-700: hsl(15 80% 37%);
+	--sky-50: hsl(200 100% 96%);  --sky-100: hsl(200 95% 90%);  --sky-600: hsl(205 85% 42%);  --sky-700: hsl(205 80% 32%);
+	--mint-50: hsl(155 70% 94%);  --mint-100: hsl(155 60% 86%); --mint-600: hsl(158 70% 34%); --mint-700: hsl(158 75% 25%);
+	--butter-50: hsl(48 100% 93%); --butter-100: hsl(48 100% 82%); --butter-600: hsl(42 100% 45%); --butter-800: hsl(35 90% 26%);
+	--cherry-50: hsl(350 100% 97%); --cherry-100: hsl(350 95% 92%); --cherry-600: hsl(350 72% 48%); --cherry-700: hsl(350 70% 38%);
+	--white: hsl(0 0% 100%);
+	/* bold accents: magenta is ANALOGOUS to the violet (67 deg away), so the violet -> magenta gradient stays one family */
+	--magenta-600: hsl(322 80% 44%); --magenta-700: hsl(322 80% 38%); --lime-300: hsl(78 92% 68%);
+	--night-900: hsl(255 35% 16%);
+
+	/* ----- Layer 2: semantic tokens ----- */
+	/* 60% - cloud background and surfaces */
+	--color-bg: var(--cloud-50);
+	--color-surface: var(--cloud-0);
+	--color-surface-muted: var(--cloud-100);
+	--color-surface-hover: var(--cloud-50);
+	--color-border: var(--cloud-200);            /* decorative lines */
+	--color-border-strong: var(--ink-400);       /* edges of inputs and chips: 3.9:1 (WCAG 1.4.11) */
+	--color-text: var(--ink-900);                /* 17.5:1 */
+	--color-text-muted: var(--ink-600);          /* 6.7:1 */
+	--color-on-color: var(--white);
+	--color-on-dark: hsl(250 10% 90%);
+	--color-on-dark-muted: hsl(250 8% 75%);
+	--color-link: var(--violet-700);             /* 8.6:1 */
+	/* 30% - ink structure */
+	--color-primary: var(--ink-900);             /* normal buttons, active menu item */
+	--color-primary-hover: var(--ink-800);
+	--color-primary-active: var(--ink-950);
+	--color-primary-soft: var(--violet-50);      /* soft lavender panels, table heads */
+	--color-primary-strong: var(--ink-950);      /* admin sidebar, footer */
+	/* 10% - violet call-to-action + lime "pop" */
+	--color-cta: var(--violet-600);              /* 6.7:1 with white text */
+	--color-cta-hover: var(--violet-700);
+	--color-on-cta: var(--white);
+	--color-cta-soft: var(--violet-50);
+	--color-cta-tint: var(--violet-100);
+	--color-cta-text: var(--violet-700);
+	--color-pop: var(--lime-400);                /* counters; 13.7:1 with ink text */
+	--color-on-pop: var(--ink-900);
+	/* gradients for the accents: white text passes on both ends (violet 6.7:1, magenta 5.3:1) */
+	--gradient-cta: linear-gradient(120deg, var(--violet-600) 0%, var(--magenta-600) 100%);
+	--gradient-cta-hover: linear-gradient(120deg, var(--violet-700) 0%, var(--magenta-700) 100%);
+	--gradient-brand: linear-gradient(90deg, var(--violet-600), var(--magenta-600) 50%, var(--lime-400));
+	--glow-cta: 0 8px 22px -6px hsl(290 80% 50% / 0.55);
+	--color-highlight: var(--lime-400);          /* marker behind words, ink text 13.8:1 */
+	/* states - fixed meanings */
+	--color-success: var(--mint-600);   --color-success-soft: var(--mint-50);   --color-success-text: var(--mint-700);
+	--color-warning: var(--butter-600); --color-warning-soft: var(--butter-50); --color-warning-text: var(--butter-800);
+	--color-error: var(--cherry-600);   --color-error-soft: var(--cherry-50);   --color-error-text: var(--cherry-700);
+	--color-error-hover: var(--cherry-700);
+	--color-info: var(--sky-600);       --color-info-soft: var(--sky-50);       --color-info-text: var(--sky-700);
+	--color-neutral-soft: var(--cloud-100);
+	/* focus ring: violet on light areas (6.1:1), white on dark ones */
+	--color-focus: var(--violet-600);
+	--color-focus-on-dark: var(--white);
+	--color-focus-glow: hsl(255 75% 55% / 0.25);
+	/* see-through layers */
+	--overlay-1: hsl(0 0% 100% / 0.08);  --overlay-2: hsl(0 0% 100% / 0.15);  --overlay-3: hsl(0 0% 100% / 0.25);
+	--glass: hsl(40 40% 99% / 0.86);     /* frosted header */
+	--scrim: hsl(250 24% 9% / 0.08);
+	/* shadows tinted with the ink hue (softer than black) */
+	--shadow-sm: 0 1px 3px hsl(250 22% 11% / 0.06);
+	--shadow: 0 2px 12px hsl(250 22% 11% / 0.07);
+	--shadow-lg: 0 12px 28px -8px hsl(250 22% 11% / 0.18);
+	--shadow-float: 0 6px 18px hsl(250 22% 11% / 0.25);
+
+	/* role colours: a pastel "aura" (two tints) for the banner, one strong colour for numbers / icons, one soft tint */
+	--role-adopter-a: var(--violet-100); --role-adopter-b: var(--pink-100);   --role-adopter: var(--violet-700); --role-adopter-soft: var(--violet-50);
+	--role-owner-a: var(--peach-100);    --role-owner-b: var(--butter-100);   --role-owner: var(--peach-700);    --role-owner-soft: var(--peach-50);
+	--role-staff-a: var(--sky-100);      --role-staff-b: var(--mint-100);     --role-staff: var(--sky-700);      --role-staff-soft: var(--sky-50);
+	--role-admin-a: var(--violet-100);   --role-admin-b: var(--sky-100);      --role-admin: var(--ink-900);      --role-admin-soft: var(--violet-50);
+
+	/* older names, still used in the rules below */
+	--primary: var(--color-primary);
+	--primary-dark: var(--color-primary-hover);
+	--primary-light: var(--color-primary-soft);
+	--accent: var(--color-cta);
+	--text: var(--color-text);
+	--muted: var(--color-text-muted);
+	--bg: var(--color-bg);
+	--surface: var(--color-surface);
+	--border: var(--color-border);
+	--danger: var(--color-error);
+	--danger-light: var(--color-error-soft);
+	--success-light: var(--color-success-soft);
+
+	--radius: 14px;
+	--font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: var(--font);
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--text);
+	background: var(--bg);
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+a {
+	color: var(--color-link);
+}
+
+a:hover {
+	color: var(--primary-dark);
+}
+
+h1,
+h2,
+h3 {
+	line-height: 1.25;
+	margin: 0 0 0.6em;
+}
+
+h1 {
+	font-size: 1.9rem;
+}
+
+h2 {
+	font-size: 1.35rem;
+}
+
+h3 {
+	font-size: 1.1rem;
+}
+
+/* Clear focus outline for keyboard users */
+:focus-visible {
+	outline: 3px solid var(--color-focus);
+	outline-offset: 2px;
+}
+
+.container {
+	width: 100%;
+	max-width: 1120px;
+	margin: 0 auto;
+	padding: 0 1rem;
+}
+
+main.container {
+	flex: 1;
+	padding-top: 1.5rem;
+	padding-bottom: 3rem;
+}
+
+main:focus {
+	outline: none;
+}
+
+/* Source: WebAIM (no date) Invisible Content Just for Screen Reader Users; WebAIM (no date) Skip Navigation Links. */
+/* ---------- Accessibility helpers ---------- */
+.skip-link {
+	position: absolute;
+	left: 1rem;
+	top: -100px;
+	background: var(--text);
+	color: var(--color-on-color);
+	padding: 0.6rem 1rem;
+	border-radius: 0 0 8px 8px;
+	z-index: 100;
+}
+
+.skip-link:focus {
+	top: 0;
+	color: var(--color-on-color);
+}
+
+.visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Source: MDN Web Docs (no date) position: sticky, Flexbox and media queries. */
+/* ---------- Header and navigation ---------- */
+.site-header {
+	background: var(--glass);
+	-webkit-backdrop-filter: saturate(160%) blur(10px);
+	backdrop-filter: saturate(160%) blur(10px);   /* MDN Web Docs (no date) backdrop-filter. https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter */
+	border-bottom: 1px solid var(--color-border);
+	color: var(--color-text);
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	box-shadow: var(--shadow);
+}
+
+#admin .site-header {
+	background: var(--color-primary-strong);
+}
+
+.header-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	min-height: 64px;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--color-text);
+	letter-spacing: -0.02em;
+	text-decoration: none;
+	font-weight: 700;
+	font-size: 1.3rem;
+}
+
+.brand:hover {
+	color: var(--color-text);
+}
+
+.brand small {
+	font-weight: 400;
+	font-size: 0.85rem;
+	opacity: 0.85;
+}
+
+.nav-toggle {
+	background: none;
+	border: 2px solid var(--color-border-strong);
+	border-radius: 12px;
+	width: 44px;
+	height: 44px;
+	cursor: pointer;
+	position: relative;
+}
+
+.nav-toggle-bar,
+.nav-toggle-bar::before,
+.nav-toggle-bar::after {
+	position: absolute;
+	left: 50%;
+	width: 22px;
+	height: 2px;
+	margin-left: -11px;
+	background: var(--color-text);
+	content: "";
+}
+
+.nav-toggle-bar {
+	top: 50%;
+}
+
+.nav-toggle-bar::before {
+	top: -7px;
+}
+
+.nav-toggle-bar::after {
+	top: 7px;
+}
+
+.main-nav {
+	display: none;
+	width: 100%;
+	padding-bottom: 1rem;
+}
+
+.main-nav.open {
+	display: block;
+}
+
+.main-nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.main-nav a {
+	display: block;
+	color: var(--color-text);
+	text-decoration: none;
+	padding: 0.5rem 0.9rem;
+	border-radius: 999px;
+	font-weight: 500;
+}
+
+.main-nav a:hover {
+	background: var(--color-cta-soft);
+	color: var(--color-text);
+}
+
+.main-nav a[aria-current="page"] {
+	background: var(--color-primary);
+	color: var(--color-on-color);
+	font-weight: 600;
+}
+
+.main-nav .nav-admin {
+	/* outlined: the violet is kept for the main action of each page (60-30-10) */
+	background: transparent;
+	box-shadow: inset 0 0 0 2px var(--color-text);
+	color: var(--color-text);
+	font-weight: 600;
+}
+
+.main-nav .nav-admin:hover {
+	background: var(--color-pop);
+	color: var(--color-on-pop);
+}
+
+.main-nav .btn {
+	background: var(--color-cta);
+	border-color: var(--color-cta);
+	color: var(--color-on-cta);
+}
+
+.main-nav .btn:hover {
+	background: var(--color-cta-hover);
+	color: var(--color-on-cta);
+}
+
+@media (min-width: 900px) {
+	.nav-toggle {
+		display: none;
+	}
+
+	.main-nav {
+		display: flex !important;
+		width: auto;
+		flex: 1;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0 0 0 2rem;
+	}
+
+	.main-nav ul {
+		display: flex;
+		gap: 0.25rem;
+		align-items: center;
+	}
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+	display: inline-block;
+	background: var(--primary);
+	color: var(--color-on-color);
+	border: 2px solid var(--primary);
+	border-radius: 999px;
+	padding: 0.55rem 1.2rem;
+	font: inherit;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+	line-height: 1.3;
+	transition: background 0.15s, color 0.15s;
+}
+
+.btn:hover {
+	background: var(--primary-dark);
+	border-color: var(--primary-dark);
+	color: var(--color-on-color);
+}
+
+.btn-outline {
+	background: transparent;
+	color: var(--primary);
+}
+
+.btn-outline:hover {
+	background: var(--primary-light);
+	color: var(--primary-dark);
+}
+
+.btn-danger {
+	background: var(--danger);
+	border-color: var(--danger);
+}
+
+.btn-danger:hover {
+	background: var(--color-error-hover);
+	border-color: var(--color-error-hover);
+}
+
+.btn-small {
+	padding: 0.3rem 0.8rem;
+	font-size: 0.9rem;
+}
+
+.btn-large {
+	padding: 0.8rem 1.6rem;
+	font-size: 1.05rem;
+}
+
+.btn-block {
+	display: block;
+	width: 100%;
+}
+
+/* ---------- Alerts ---------- */
+.alert {
+	padding: 0.9rem 1.1rem;
+	border-radius: var(--radius);
+	margin-bottom: 1.5rem;
+	border-left: 5px solid;
+}
+
+.alert ul {
+	margin: 0.3rem 0 0;
+	padding-left: 1.2rem;
+}
+
+.alert p {
+	margin: 0;
+}
+
+.alert-success {
+	background: var(--color-success-soft);
+	border-color: var(--color-success);
+}
+
+.alert-error {
+	background: var(--danger-light);
+	border-color: var(--danger);
+}
+
+/* ---------- Home page ---------- */
+.hero {
+	display: grid;
+	gap: 2rem;
+	align-items: center;
+	background: var(--surface);
+	border-radius: 20px;
+	padding: 2rem 1.5rem;
+	box-shadow: var(--shadow);
+	margin-bottom: 2rem;
+}
+
+.hero h1 {
+	font-size: 2.1rem;
+}
+
+.hero p {
+	font-size: 1.1rem;
+	color: var(--muted);
+}
+
+.hero-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: 1.25rem;
+}
+
+.hero-image {
+	margin: 0 auto;
+	max-height: 300px;
+	width: auto;
+}
+
+@media (min-width: 800px) {
+	.hero {
+		grid-template-columns: 1.2fr 1fr;
+		padding: 3rem;
+	}
+
+	.hero h1 {
+		font-size: 2.7rem;
+	}
+}
+
+.stats {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
+	margin-bottom: 2.5rem;
+}
+
+@media (min-width: 700px) {
+	.stats {
+		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	}
+}
+
+.stat {
+	background: var(--surface);
+	border-radius: var(--radius);
+	padding: 1.1rem;
+	text-align: center;
+	box-shadow: var(--shadow);
+	border-top: 4px solid var(--color-primary);   /* teal (30%), so the orange stays for the main action */
+}
+
+.stat-number {
+	display: block;
+	font-size: 2rem;
+	font-weight: 700;
+	color: var(--primary);
+}
+
+.stat-label {
+	color: var(--muted);
+	font-size: 0.95rem;
+}
+
+.steps {
+	margin-top: 3rem;
+}
+
+.step-list {
+	list-style: none;
+	padding: 0;
+	display: grid;
+	gap: 1rem;
+	counter-reset: step;
+}
+
+@media (min-width: 700px) {
+	.step-list {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+.step-list li {
+	background: var(--surface);
+	border-radius: var(--radius);
+	padding: 1.25rem;
+	box-shadow: var(--shadow);
+	counter-increment: step;
+}
+
+.step-list li::before {
+	content: counter(step);
+	display: inline-grid;
+	place-items: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	background: var(--primary);
+	color: var(--color-on-color);
+	font-weight: 700;
+	margin-bottom: 0.5rem;
+}
+
+.step-list p {
+	margin: 0;
+	color: var(--muted);
+}
+
+/* ---------- Section headings ---------- */
+.section-head {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 1.5rem 0 1rem;
+}
+
+.section-head h1,
+.section-head h2 {
+	margin: 0;
+}
+
+.lead {
+	font-size: 1.1rem;
+	color: var(--muted);
+	max-width: 60ch;
+}
+
+.empty {
+	color: var(--muted);
+	background: var(--surface);
+	padding: 1.5rem;
+	border-radius: var(--radius);
+	text-align: center;
+}
+
+.meta {
+	color: var(--muted);
+	font-size: 0.92rem;
+	margin: 0.15rem 0;
+}
+
+.meta-place {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+}
+
+.center {
+	text-align: center;
+}
+
+/* Source: MDN Web Docs (no date) CSS grid layout and aspect-ratio. */
+/* ---------- Cards and grid ---------- */
+.grid {
+	display: grid;
+	gap: 1.25rem;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.card {
+	background: var(--surface);
+	border-radius: var(--radius);
+	overflow: hidden;
+	box-shadow: var(--shadow);
+	transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.pet-card:hover {
+	transform: translateY(-3px);
+	box-shadow: var(--shadow-lg);
+}
+
+.card-image img {
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	background: var(--primary-light);
+}
+
+.card-body {
+	padding: 1rem 1.1rem 1.2rem;
+}
+
+.card-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 0.5rem;
+}
+
+.card-body h3 {
+	margin: 0;
+	font-size: 1.2rem;
+}
+
+.card-body h3 a {
+	text-decoration: none;
+	color: var(--text);
+}
+
+.card-body h3 a:hover {
+	color: var(--primary);
+	text-decoration: underline;
+}
+
+.shelter-card h2 {
+	font-size: 1.2rem;
+	margin-bottom: 0.2rem;
+}
+
+/* Status badges - text colours all pass AA on their background */
+.badge {
+	display: inline-block;
+	padding: 0.15rem 0.65rem;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+
+
+/* ---------- Filters ---------- */
+.filters {
+	background: var(--surface);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+	padding: 1.1rem;
+	display: grid;
+	gap: 0.75rem;
+	margin-bottom: 1rem;
+}
+
+@media (min-width: 700px) {
+	.filters {
+		grid-template-columns: 2fr 1fr 1fr 1fr;
+		align-items: end;
+	}
+}
+
+.filters .field {
+	margin: 0;
+}
+
+.filter-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+
+@media (min-width: 700px) {
+	.filter-actions {
+		grid-column: 1 / -1;
+		justify-content: flex-end;
+	}
+}
+
+.result-count {
+	color: var(--muted);
+	font-weight: 600;
+}
+
+/* ---------- Pet details ---------- */
+.breadcrumb {
+	font-size: 0.95rem;
+	margin-bottom: 1rem;
+	color: var(--muted);
+}
+
+.pet-detail {
+	display: grid;
+	gap: 2rem;
+	background: var(--surface);
+	border-radius: 20px;
+	padding: 1.25rem;
+	box-shadow: var(--shadow);
+}
+
+@media (min-width: 850px) {
+	.pet-detail {
+		grid-template-columns: 1fr 1fr;
+		padding: 2rem;
+	}
+}
+
+.pet-photo {
+	width: 100%;
+	border-radius: var(--radius);
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	background: var(--primary-light);
+}
+
+.facts {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 0.75rem;
+	margin: 1rem 0 1.5rem;
+}
+
+.facts div {
+	background: var(--bg);
+	border-radius: 10px;
+	padding: 0.6rem 0.8rem;
+}
+
+.facts dt {
+	font-size: 0.85rem;
+	color: var(--muted);
+}
+
+.facts dd {
+	margin: 0;
+	font-weight: 600;
+}
+
+.description {
+	white-space: normal;
+}
+
+.shelter-box {
+	border-top: 1px solid var(--border);
+	padding-top: 1rem;
+	margin-top: 1rem;
+}
+
+.shelter-box p {
+	margin: 0.2rem 0;
+}
+
+.owner-actions {
+	display: flex;
+	gap: 0.6rem;
+	margin-top: 1.5rem;
+	flex-wrap: wrap;
+}
+
+.request-panel {
+	margin-top: 2rem;
+}
+
+/* ---------- Panels and forms ---------- */
+.panel {
+	background: var(--surface);
+	border-radius: var(--radius);
+	padding: 1.5rem;
+	box-shadow: var(--shadow);
+	margin-bottom: 1.5rem;
+}
+
+.narrow {
+	max-width: 720px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.narrow.small {
+	max-width: 440px;
+}
+
+.form .field {
+	margin-bottom: 1.1rem;
+}
+
+.field label,
+.field legend {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.3rem;
+}
+
+fieldset.field {
+	border: 0;
+	padding: 0;
+	margin: 0 0 1.1rem;
+}
+
+.field-row {
+	display: grid;
+	gap: 0 1rem;
+}
+
+@media (min-width: 600px) {
+	.field-row {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+select,
+textarea {
+	width: 100%;
+	font: inherit;
+	color: var(--text);
+	padding: 0.6rem 0.75rem;
+	border: 2px solid var(--color-border-strong);
+	border-radius: 10px;
+	background: var(--color-surface);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	border-color: var(--primary);
+	outline: none;
+	box-shadow: 0 0 0 3px var(--color-focus-glow);
+}
+
+/* Only show the red border after the user has tried to submit (class added by main.js) */
+.was-validated input:invalid,
+.was-validated select:invalid,
+.was-validated textarea:invalid {
+	border-color: var(--danger);
+}
+
+input[type="file"] {
+	font: inherit;
+}
+
+textarea {
+	resize: vertical;
+}
+
+.radio-group {
+	display: flex;
+	gap: 1.5rem;
+}
+
+.radio,
+.checkbox {
+	display: inline-flex !important;
+	align-items: center;
+	gap: 0.4rem;
+	font-weight: 400 !important;
+	cursor: pointer;
+}
+
+.radio input,
+.checkbox input {
+	width: 1.15rem;
+	height: 1.15rem;
+	accent-color: var(--primary);
+}
+
+.hint {
+	font-size: 0.9rem;
+	color: var(--muted);
+	margin: 0.3rem 0 0;
+}
+
+.required {
+	color: var(--danger);
+}
+
+.char-count {
+	font-size: 0.85rem;
+	color: var(--muted);
+	text-align: right;
+	margin: 0.2rem 0 0;
+}
+
+.form-actions {
+	display: flex;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+	margin-top: 1.5rem;
+}
+
+.current-image {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.current-image img,
+.image-preview {
+	border-radius: 8px;
+	width: 160px;
+	height: 120px;
+	object-fit: cover;
+}
+
+.image-preview {
+	margin-top: 0.75rem;
+}
+
+.inline-form {
+	display: inline;
+}
+
+/* ---------- Tables ---------- */
+.table-wrap {
+	overflow-x: auto;
+	background: var(--surface);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
+	margin-bottom: 2rem;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	min-width: 620px;
+}
+
+th,
+td {
+	padding: 0.7rem 0.9rem;
+	text-align: left;
+	vertical-align: middle;
+	border-bottom: 1px solid var(--border);
+}
+
+th {
+	background: var(--primary-light);
+	font-size: 0.9rem;
+}
+
+#admin th {
+	background: var(--color-surface-muted);
+}
+
+tbody tr:hover {
+	background: var(--color-surface-hover);
+}
+
+td.actions {
+	white-space: nowrap;
+}
+
+td.actions .btn,
+td.actions .inline-form {
+	margin: 0.15rem 0.1rem;
+}
+
+.thumb {
+	width: 64px;
+	height: 48px;
+	object-fit: cover;
+	border-radius: 6px;
+}
+
+.admin-split {
+	display: grid;
+	gap: 1.5rem;
+}
+
+@media (min-width: 950px) {
+	.admin-split {
+		grid-template-columns: 340px 1fr;
+		align-items: start;
+	}
+}
+
+.simple-list {
+	background: var(--surface);
+	border-radius: var(--radius);
+	padding: 1rem 1rem 1rem 2.2rem;
+	box-shadow: var(--shadow);
+}
+
+.simple-list li {
+	margin: 0.4rem 0;
+}
+
+.message h2 {
+	font-size: 1.15rem;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+	background: var(--color-primary-strong);
+	color: var(--color-on-dark);
+	padding: 1.5rem 0;
+	font-size: 0.92rem;
+}
+
+.site-footer a {
+	color: var(--violet-200);
+}
+
+.footer-inner p {
+	margin: 0.2rem 0;
+}
+
+/* Source: MDN Web Docs (no date) CSS grid layout (grid-template-columns) and media queries. */
+/* Public site footer: 1 column on phones, 2 on tablets, 4 on desktop */
+.site-footer-full {
+	padding: 2.5rem 0 0;
+	margin-top: 2rem;
+	border-top: 4px solid var(--color-primary);
+}
+
+.footer-grid {
+	display: grid;
+	gap: 2rem;
+	padding-bottom: 2rem;
+}
+
+@media (min-width: 600px) {
+	.footer-grid {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+@media (min-width: 900px) {
+	.footer-grid {
+		grid-template-columns: 1.6fr 1fr 1fr 1.3fr;
+	}
+}
+
+.site-footer .footer-brand {
+	color: var(--color-on-color);
+	margin-bottom: 0.6rem;
+}
+
+.footer-about p {
+	margin: 0;
+	color: var(--color-on-dark-muted);
+	max-width: 34ch;
+}
+
+.footer-col h2 {
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--color-on-color);
+	margin-bottom: 0.8rem;
+}
+
+.footer-col ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.footer-col li {
+	margin-bottom: 0.45rem;
+	color: var(--color-on-dark-muted);
+}
+
+.footer-col a {
+	color: var(--color-on-dark);
+	text-decoration: none;
+}
+
+.footer-col a:hover {
+	color: var(--color-pop);
+	text-decoration: underline;
+}
+
+.footer-bottom {
+	border-top: 1px solid var(--overlay-2);
+	padding: 1rem 0;
+}
+
+.footer-bottom-inner {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.footer-bottom p {
+	margin: 0;
+	color: var(--color-on-dark-muted);
+}
+
+/* Source: MDN Web Docs (no date) prefers-reduced-motion. */
+/* Respect users who prefer less movement */
+@media (prefers-reduced-motion: reduce) {
+	* {
+		transition: none !important;
+	}
+}
+
+/* ---------- Favourites (heart button) ---------- */
+.card-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 0.6rem;
+}
+
+.favourite-row {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 0.5rem 0 1rem;
+}
+
+.favourite-row .meta {
+	margin: 0;
+}
+
+.btn-favourite {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	/* 44px = comfortable touch target */
+	border: 2px solid var(--border);
+	border-radius: 50%;
+	background: var(--surface);
+	color: var(--muted);
+	cursor: pointer;
+	transition: transform 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn-favourite svg {
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+}
+
+.btn-favourite:hover {
+	border-color: var(--danger);
+	color: var(--danger);
+	transform: scale(1.08);
+}
+
+.btn-favourite.saved {
+	border-color: var(--danger);
+	color: var(--danger);
+	background: var(--danger-light);
+}
+
+.btn-favourite.saved svg {
+	fill: currentColor;
+}
+
+/* Source: adapted from W3Schools (no date) How To - CSS Pagination. */
+/* ---------- Pagination ---------- */
+.pagination {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 0.4rem;
+	margin-top: 2rem;
+}
+
+.pagination ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.page-link {
+	display: inline-block;
+	min-width: 44px;
+	padding: 0.5rem 0.8rem;
+	text-align: center;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--surface);
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.page-link:hover {
+	background: var(--primary-light);
+}
+
+.page-link.current {
+	background: var(--primary);
+	border-color: var(--primary);
+	color: var(--color-on-color);
+}
+
+/* ---------- Profile page ---------- */
+.account-meta {
+	margin: -0.5rem 0 1.5rem;
+}
+
+.profile-grid {
+	display: grid;
+	gap: 1.5rem;
+}
+
+@media (min-width: 850px) {
+	.profile-grid {
+		grid-template-columns: 1fr 1fr;
+		align-items: start;
+	}
+}
+/* Source: adapted from W3Schools (no date) How To - Scroll Back To Top Button; MDN Web Docs (no date) position: fixed. */
+/* ---------- Round "back to top" button (shown by js/main.js when scrolling) ---------- */
+.to-top {
+	position: fixed;
+	right: 1.25rem;
+	bottom: 1.25rem;
+	z-index: 50;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: var(--primary);
+	color: var(--color-on-color);
+	box-shadow: var(--shadow-float);
+	/* hidden until the page is scrolled */
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(12px);
+	transition: opacity 0.2s, transform 0.2s, visibility 0.2s, background 0.15s;
+}
+.to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+.to-top:hover { background: var(--primary-dark); color: var(--color-on-color); transform: translateY(-3px); }
+.to-top:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 3px; }
+@media (min-width: 900px) { .to-top { right: 2rem; bottom: 2rem; width: 52px; height: 52px; } }
+
+/* ---------- Photo credit under the pet photo ---------- */
+/* Source: MDN Web Docs (no date) <figure> and <figcaption>. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption */
+.pet-figure { margin: 0; }
+.photo-credit { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; }
+.photo-credit a { color: var(--muted); }
+.photo-credit a:hover { color: var(--primary); }
+
+/* ==========================================================
+   Pet details, trust badges, advanced filters, request tracker
+   Source: MDN Web Docs (no date) Flexbox and CSS grid layout;
+           MDN Web Docs (no date) ::before pseudo-element and the content property.
+           https://developer.mozilla.org/en-US/docs/Web/CSS/::before
+   Colours reuse the variables at the top of this file (WCAG AA contrast).
+   ========================================================== */
+
+/* Request stage badges (New / Interviewing reuse the old "pending" colours) */
+
+/* Who is offering the pet */
+.trust-row { margin: 0.4rem 0 0.6rem; }
+
+/* Small "good with" tags on the pet cards */
+.tag-list { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; margin: 0.5rem 0 0; padding: 0; }
+.tag { font-size: 0.78rem; padding: 0.1rem 0.55rem; border-radius: 999px; background: var(--primary-light); color: var(--primary-dark); }
+
+/* Yes / no lists on the pet page */
+.check-list { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: 0.35rem; }
+@media (min-width: 600px) { .check-list { grid-template-columns: 1fr 1fr; } }
+.check-list li::before { display: inline-block; width: 1.4rem; font-weight: 700; }
+.check-list li.yes::before { content: "\2713"; color: var(--color-success-text); }   /* check mark */
+.check-list li.no { color: var(--muted); }
+.check-list li.no::before { content: "\2717"; color: var(--danger); }   /* cross */
+.health-notes { margin-top: 0; }
+
+/* Forms: sub heading and tick box groups */
+.form-section { font-size: 1.15rem; margin-top: 1.8rem; padding-top: 1.2rem; border-top: 1px solid var(--border); }
+.checkbox-group { display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem; }
+.radio-stack { flex-direction: column; gap: 0.4rem; }
+
+/* "More filters" box on the pets page */
+.more-filters { grid-column: 1 / -1; border-top: 1px solid var(--border); padding-top: 0.75rem; }
+.more-filters summary { cursor: pointer; font-weight: 600; color: var(--primary); width: max-content; }
+.more-filters-grid { display: grid; gap: 1rem; margin-top: 1rem; }
+@media (min-width: 700px) { .more-filters-grid { grid-template-columns: repeat(4, 1fr); } }
+.more-filters .field { margin: 0; }
+.compat-filter { grid-column: 1 / -1; }
+
+/* My account: adoption request cards with a progress tracker */
+.adopter-panel { margin-bottom: 2rem; }
+.request-list { display: grid; gap: 1rem; }
+.request-card { display: flex; gap: 1rem; align-items: flex-start; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem; }
+.request-card .thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.request-body { flex: 1; min-width: 0; }
+.request-body h3 { margin: 0; }
+.tracker { display: flex; list-style: none; margin: 0.8rem 0 0; padding: 0; counter-reset: none; }
+.tracker li { flex: 1; position: relative; text-align: center; font-size: 0.85rem; color: var(--muted); }
+/* the line between two steps */
+.tracker li + li::before { content: ""; position: absolute; top: 14px; right: 50%; width: 100%; height: 3px; background: var(--border); z-index: 0; }
+.tracker li.done::before, .tracker li.current::before { background: var(--primary); }   /* a line is green when the step it leads TO has been reached */
+.tracker li.rejected::before { background: var(--danger); }
+.tracker-dot { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 50%; background: var(--surface); border: 3px solid var(--border); font-weight: 700; }
+.tracker-label { display: block; margin-top: 0.25rem; }
+.tracker li.done .tracker-dot, .tracker li.current .tracker-dot { border-color: var(--primary); }
+.tracker li.done .tracker-dot { background: var(--primary); color: var(--color-on-color); }
+.tracker li.current { color: var(--text); font-weight: 700; }
+.tracker li.rejected .tracker-dot { border-color: var(--danger); color: var(--danger); }
+.tracker li.rejected { color: var(--danger); font-weight: 700; }
+.tracker li.done:last-child { color: var(--text); font-weight: 700; }   /* the final step is bold, filled and ticked */
+
+/* Adopter profile shown to the admin and on the request form */
+.profile-summary { margin: 0.4rem 0 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--muted); }
+.profile-note { background: var(--primary-light); border-radius: 8px; padding: 0.6rem 0.8rem; font-size: 0.95rem; }
+
+/* ---------- Listing review (approval) ---------- */
+/* .badge-pending / .badge-approved / .badge-rejected already exist above; this adds the warning alert */
+.alert-warning { background: var(--color-warning-soft); border-color: var(--color-warning); }
+.review-note { width: 100%; min-width: 14rem; }
+.count-badge { display: inline-block; min-width: 1.4rem; padding: 0 0.4rem; border-radius: 999px; background: var(--color-pop); color: var(--text); font-size: 0.8rem; font-weight: 700; text-align: center; }
+.review-list { display: grid; gap: 1rem; }
+.review-card .thumb { width: 96px; height: 72px; }
+.review-card h2 { font-size: 1.2rem; margin-bottom: 0.2rem; }
+.review-warning { margin: 0.5rem 0; padding: 0.5rem 0.8rem; font-size: 0.92rem; }
+.review-form { margin-top: 0.8rem; }
+
+/* Shelter shown as plain text in the pet form (staff cannot change it) */
+.label-text { display: block; font-weight: 600; margin-bottom: 0.3rem; }
+.fixed-value { margin: 0; padding: 0.55rem 0.8rem; background: var(--bg); border-radius: 8px; }
+.shelter-assign { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+.shelter-assign select { max-width: 14rem; }
+
+/* Adoption request message quoted on the handler's page */
+.request-message { margin: 0.6rem 0; padding: 0.6rem 1rem; border-left: 4px solid var(--primary); background: var(--bg); border-radius: 0 8px 8px 0; }
+
+/* ---------- Message under the heart button (shown for 5 seconds by js/main.js) ---------- */
+/* Source: MDN Web Docs (no date) position: absolute, ::after and CSS transitions.
+           https://developer.mozilla.org/en-US/docs/Web/CSS/position */
+.favourite-wrap { position: relative; display: inline-block; }
+.favourite-note, .action-note {
+	position: absolute;
+	top: calc(100% + 10px);           /* directly under the button, with room for the little arrow */
+	left: 0;
+	z-index: 20;
+	width: max-content;
+	max-width: 15rem;
+	white-space: normal;              /* table cells set nowrap, and the bubble would inherit it and be cut off */
+	text-align: left;
+	padding: 0.5rem 0.8rem;
+	border-radius: 8px;
+	background: var(--text);
+	color: var(--color-on-color);
+	font-size: 0.85rem;
+	line-height: 1.35;
+	box-shadow: var(--shadow-float);
+	/* hidden until js/main.js adds .show */
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-4px);
+	transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+	pointer-events: none;             /* never blocks clicks on whatever is under it */
+}
+.favourite-note.show, .action-note.show { opacity: 1; visibility: visible; transform: translateY(0); }
+.favourite-note.error, .action-note.error { background: var(--danger); }
+/* little arrow pointing up at the button */
+.favourite-note::after, .action-note::after {
+	content: "";
+	position: absolute;
+	bottom: 100%;
+	left: 15px;
+	border: 6px solid transparent;
+	border-bottom-color: var(--text);
+}
+.favourite-note.error::after, .action-note.error::after { border-bottom-color: var(--danger); }
+/* On the cards the heart is at the right-hand edge, so the message opens to the left instead */
+.card-footer .favourite-note { left: auto; right: 0; }
+.card-footer .favourite-note::after { left: auto; right: 15px; }
+
+/* The cards used to hide anything outside them (overflow: hidden), which would cut the message off,
+   so the photo gets its own rounded top corners instead */
+.pet-card { overflow: visible; }
+.pet-card .card-image img { border-radius: var(--radius) var(--radius) 0 0; }
+.pet-card:hover, .pet-card:focus-within { position: relative; z-index: 5; }   /* the message sits above the next row of cards */
+
+/* Bubble for the request stage buttons: sits under the buttons, does not take up room */
+.action-wrap { position: relative; }
+.action-note { top: 8px; }
+.tracker-note { margin: 0.4rem 0 0; }
+
+/* In the admin table the buttons are in the last column, close to the edge of the table's own scroll area,
+   so the bubble is narrower and starts at the left edge of the cell (a wide bubble would be cut off) */
+td.actions .action-note { left: 0; right: auto; max-width: 11rem; }
+td.actions .action-note::after { left: 15px; right: auto; }
+
+/* Progress bar: the day under each step, and a step that was skipped */
+.tracker-date { display: block; font-size: 0.78rem; font-weight: 400; color: var(--muted); }
+.tracker li.skipped { color: var(--muted); font-style: italic; }
+.tracker li.skipped .tracker-dot { border-style: dashed; color: var(--muted); }
+.tracker li.skipped::before { background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 10px); }
+
+/* Delete my account (profile page) */
+.danger-zone { margin-top: 1.5rem; border: 2px solid var(--danger); }
+.danger-zone h2 { color: var(--danger); }
+.delete-list { margin: 0.4rem 0 1rem; padding-left: 1.2rem; }
+
+/* ==========================================================
+   ADMIN AREA (redesign) - everything below only applies to pages with <body class="admin">
+   Source: MDN Web Docs (no date) CSS grid layout. https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout
+           MDN Web Docs (no date) position: sticky. https://developer.mozilla.org/en-US/docs/Web/CSS/position
+           Coyier, C. (2011) Responsive Data Tables, CSS-Tricks (tables become cards on phones, labels from data-label).
+           https://css-tricks.com/responsive-data-tables/
+           MDN Web Docs (no date) attr(). https://developer.mozilla.org/en-US/docs/Web/CSS/attr
+   ========================================================== */
+.admin { --admin-side: var(--color-primary-strong); --admin-side-text: hsl(0 0% 100% / 0.82); background: var(--color-bg); }
+
+/* --- frame: sidebar + page --- */
+.admin-shell { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 100vh; }
+.admin-sidebar { background: var(--admin-side); color: var(--color-on-color); padding: 0.75rem 1rem; }
+.admin-brand-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.admin-brand-row .brand { color: var(--color-on-color); }
+.admin-brand-row .brand small { display: block; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75; font-weight: 600; }
+.admin .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
+.admin-nav { display: none; padding: 1rem 0 0.5rem; }
+.admin-nav.open { display: block; }
+.admin-nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+.admin-nav a { display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.75rem; border-radius: 8px; color: var(--admin-side-text); text-decoration: none; font-weight: 500; }
+.admin-nav a:hover { background: var(--overlay-1); color: var(--color-on-color); }
+.admin-nav a[aria-current="page"] { background: var(--overlay-2); color: var(--color-on-color); box-shadow: inset 3px 0 0 var(--color-pop); font-weight: 600; }
+.admin-nav .count-badge { margin-left: auto; }
+.admin-nav-bottom { margin-top: 1.25rem !important; padding-top: 1rem !important; border-top: 1px solid var(--overlay-2); }
+.admin-user { margin: 1.25rem 0.75rem 0.5rem; font-size: 0.85rem; color: var(--admin-side-text); }
+.admin-user strong { color: var(--color-on-color); }
+.admin .icon { flex-shrink: 0; vertical-align: middle; }
+.admin-main { padding: 1.25rem 1rem 3rem; min-width: 0; }
+
+@media (min-width: 960px) {
+	.admin-shell { grid-template-columns: 250px minmax(0, 1fr); }
+	.admin-sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 1.25rem 1rem; display: flex; flex-direction: column; }
+	.admin .nav-toggle { display: none; }
+	.admin-nav { display: flex !important; flex-direction: column; flex: 1; padding-top: 1.75rem; }
+	.admin-nav-bottom { margin-top: auto !important; }
+	.admin-main { padding: 2rem 2.25rem 3rem; max-width: 1280px; }
+}
+
+/* --- page heading --- */
+.admin-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.admin-head h1 { margin: 0; font-size: 1.7rem; }
+.admin-sub { margin: 0.3rem 0 0; color: var(--muted); max-width: 70ch; }
+.admin-head-actions .btn { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+/* --- white cards --- */
+.admin-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 1.25rem; margin-bottom: 1.5rem; min-width: 0; }
+.admin-card h2 { font-size: 1.1rem; }
+.card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 0.75rem; }
+.card-head h2 { margin: 0; }
+.admin .alert { margin-bottom: 1.25rem; }
+.all-clear { display: flex; align-items: center; gap: 0.5rem; color: var(--primary); font-weight: 600; margin: 0; }
+
+/* --- dashboard --- */
+.stat-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem; }
+.stat-card { display: grid; gap: 0.15rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.2rem; color: var(--text); text-decoration: none; transition: transform 0.15s, box-shadow 0.15s; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); color: var(--text); }
+.stat-icon { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 10px; background: var(--primary-light); color: var(--primary); margin-bottom: 0.5rem; }
+.stat-value { font-size: 2rem; font-weight: 700; line-height: 1.1; }
+.stat-name { font-weight: 600; }
+.stat-detail { font-size: 0.85rem; color: var(--muted); }
+.dash-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: start; }
+.dash-grid .admin-card { margin-bottom: 0; }
+.todo-list, .mini-list { list-style: none; margin: 0; padding: 0; }
+.todo-list li + li, .mini-list li + li { border-top: 1px solid var(--border); }
+.todo-list a { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.25rem; color: var(--text); text-decoration: none; }
+.todo-list a:hover { color: var(--primary); }
+.todo-icon { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 8px; background: var(--color-warning-soft); color: var(--color-warning-text); }
+.todo-text { flex: 1; }
+.mini-list li { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; }
+.mini-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.mini-text { flex: 1; min-width: 0; }
+.mini-text .meta { display: block; margin: 0; }
+
+/* --- tables --- */
+.admin .table-wrap { box-shadow: none; border-radius: 0; margin-bottom: 0; background: transparent; }
+.admin-table { min-width: 0; }
+.admin-table th, .data-table th { background: var(--color-surface-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 700; }
+.admin-table td, .data-table td { font-size: 0.95rem; }
+.admin-table tr[hidden], .data-table tr[hidden] { display: none !important; }
+.cell-with-thumb { display: flex; align-items: center; gap: 0.75rem; }
+.admin-table .thumb, .data-table .thumb { width: 56px; height: 42px; flex-shrink: 0; }
+.cell-title { display: block; font-weight: 600; }
+.cell-sub { display: block; font-size: 0.84rem; color: var(--muted); }
+a.cell-sub { color: var(--primary); }
+.cell-message { max-width: 28ch; }
+.cell-details { margin-top: 0.3rem; font-size: 0.85rem; }
+.cell-details summary { cursor: pointer; color: var(--primary); font-weight: 600; }
+.admin-table td.actions, .data-table td.actions { white-space: normal; text-align: right; }
+.table-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.table-filter[hidden] { display: none; }
+.table-filter input { flex: 1; max-width: 380px; }
+.admin-split { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1100px) { .admin-split { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); } }
+.message-list { display: grid; gap: 1rem; }
+.message-list .admin-card { margin-bottom: 0; }
+.message-body { white-space: normal; }
+
+/* phones: each table row becomes a small card (also the pet tables in My account; :is() - MDN Web Docs (no date) :is(). https://developer.mozilla.org/en-US/docs/Web/CSS/:is), each cell shows its heading on the left */
+@media (max-width: 760px) {
+	:is(.admin-table, .data-table) thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+	.admin-table, .admin-table tbody, .admin-table tr, .admin-table td, .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+	:is(.admin-table, .data-table) tr { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; padding: 0.35rem 0.75rem; background: var(--surface); }
+	:is(.admin-table, .data-table) td { border: 0; padding: 0.45rem 0 0.45rem 7.5rem; position: relative; min-height: 2rem; }
+	:is(.admin-table, .data-table) td::before { content: attr(data-label); position: absolute; left: 0; top: 0.5rem; width: 7rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+	:is(.admin-table, .data-table) td.actions { padding-left: 0; text-align: left; border-top: 1px solid var(--border); margin-top: 0.3rem; padding-top: 0.6rem; }
+	:is(.admin-table, .data-table) td.actions::before { display: none; }
+	:is(.admin-table, .data-table) tbody tr:hover { background: var(--surface); }
+	.cell-message { max-width: none; }
+}
+
+/* ==========================================================
+   COLOUR REFRESH + ROLE AREAS (My account, Requests, Admin)
+   Each kind of user has its own colour so people always know "where" they are:
+   adopter = teal, pet owner = coral, shelter staff = blue, admin = dark teal.
+   All text colours checked for WCAG AA (4.5:1) with the WebAIM contrast formula.
+   Source: MDN Web Docs (no date) Using CSS custom properties. https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
+           MDN Web Docs (no date) linear-gradient() and radial-gradient(). https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient
+           WebAIM (no date) Contrast Checker. https://webaim.org/resources/contrastchecker/
+   ========================================================== */
+
+
+.icon { flex-shrink: 0; vertical-align: middle; }
+.btn .icon { width: 18px; height: 18px; margin: -2px 0.15rem 0 -0.15rem; }
+.btn-light { background: var(--color-surface); color: var(--color-text); border-color: var(--color-text); }
+.btn-light:hover { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-color); }
+
+/* --- coloured banner at the top of My account and Requests --- */
+.role-hero { position: relative; overflow: hidden; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+	margin: 0 0 1.5rem; padding: 1.75rem 1.5rem; border-radius: 24px; color: var(--color-text); border: 1px solid var(--color-surface);
+	/* "aura" gradient: two pastel tints blurred into each other over the cloud white */
+	background: radial-gradient(120% 140% at 0% 0%, var(--role-a) 0%, transparent 60%),
+		radial-gradient(120% 140% at 100% 100%, var(--role-b) 0%, transparent 60%),
+		var(--color-surface);
+	box-shadow: var(--shadow); }
+/* each role class sets the same variables, so banner, tiles and icons follow the role */
+.role-adopter { --role-a: var(--role-adopter-a); --role-b: var(--role-adopter-b); --role: var(--role-adopter); --role-soft: var(--role-adopter-soft); }
+.role-owner { --role-a: var(--role-owner-a); --role-b: var(--role-owner-b); --role: var(--role-owner); --role-soft: var(--role-owner-soft); }
+.role-staff { --role-a: var(--role-staff-a); --role-b: var(--role-staff-b); --role: var(--role-staff); --role-soft: var(--role-staff-soft); }
+.role-admin { --role-a: var(--role-admin-a); --role-b: var(--role-admin-b); --role: var(--role-admin); --role-soft: var(--role-admin-soft); }
+.role-hero h1 { color: var(--color-text); margin: 0.15rem 0 0.2rem; font-size: 2rem; letter-spacing: -0.03em; }
+.role-hero a:not(.btn) { color: var(--color-link); }
+.role-hero-main { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+.role-hero-text { margin: 0; max-width: 60ch; }
+.role-hero-meta { margin: 0.3rem 0 0; font-size: 0.88rem; overflow-wrap: anywhere; }
+.role-chip { display: inline-block; margin: 0; padding: 0.15rem 0.75rem; border-radius: 999px; background: var(--color-primary); color: var(--color-on-color); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.03em; }
+.avatar { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 50%;
+	background: var(--role); color: var(--color-on-color); font-size: 1.4rem; font-weight: 800; box-shadow: 0 0 0 4px var(--color-surface); }
+.avatar .icon { width: 28px; height: 28px; }
+.role-hero-small { padding: 1.2rem 1.5rem; }
+.role-hero-small .avatar { width: 52px; height: 52px; }
+@media (max-width: 600px) { .role-hero-main { align-items: flex-start; } .avatar { width: 48px; height: 48px; font-size: 1.1rem; } .role-hero h1 { font-size: 1.45rem; } }
+
+/* --- quick tiles: four colours so each one is easy to find again --- */
+.tiles { display: grid; gap: 0.9rem; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-bottom: 1.5rem; }
+.tile { --t: var(--role, var(--color-primary)); --t-bg: var(--role-soft, var(--color-primary-soft)); display: flex; align-items: center; gap: 0.85rem; padding: 1rem; background: var(--color-surface);
+	border: 1px solid var(--color-border); border-radius: 14px; color: var(--color-text); text-decoration: none; border-bottom: 4px solid var(--t); transition: transform 0.15s, box-shadow 0.15s; }
+.tile:hover, .tile:focus-visible { transform: translateY(-3px); box-shadow: 0 10px 20px -12px var(--t); color: var(--text); }
+.tile-icon { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 12px; background: var(--t-bg); color: var(--t); flex-shrink: 0; }
+.tile-text { display: grid; min-width: 0; }
+.tile-name { font-weight: 700; }
+.tile-value { font-size: 1.35rem; color: var(--t); }
+.tile-detail { font-size: 0.85rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* --- next steps --- */
+.next-steps { background: var(--color-cta-soft); border: 1px solid var(--color-cta-tint); border-left: 5px solid var(--color-cta); border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+.next-steps h2 { font-size: 1.1rem; margin: 0 0 0.5rem; }
+.next-steps ul { list-style: none; margin: 0; padding: 0; }
+.next-steps li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding: 0.55rem 0; }
+.next-steps li + li { border-top: 1px dashed var(--color-cta-tint); }
+.step-icon { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 50%; background: var(--color-cta-tint); color: var(--color-cta-text); }
+.step-text { flex: 1 1 220px; }
+
+/* --- "Jump to" links and sections --- */
+.jump-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; }
+.jump-links a { padding: 0.3rem 0.85rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+.jump-links a:hover { background: var(--primary-light); border-color: var(--primary); }
+.account-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; scroll-margin-top: 1rem; }
+.account-section .section-head { margin-bottom: 0.75rem; }
+.account-section .table-wrap { box-shadow: none; margin-bottom: 0; }
+.data-table { min-width: 0; }
+@media (max-width: 760px) { .account-section .table-wrap { background: transparent; } }
+
+/* --- request cards: a coloured stripe shows the stage at a glance --- */
+.request-card { border-left: 5px solid var(--border); }
+.request-card.stage-new { border-left-color: var(--color-info); }
+.request-card.stage-interviewing { border-left-color: var(--color-warning); }
+.request-card.stage-approved { border-left-color: var(--color-success); }
+.request-card.stage-rejected { border-left-color: var(--color-error); }
+.request-card[hidden] { display: none; }
+
+/* --- stage help and filter buttons on requests.php --- */
+.stage-help { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; list-style: none; padding: 0; margin: 0 0 1rem; color: var(--muted); font-size: 0.9rem; }
+.stage-help li { display: flex; align-items: center; gap: 0.4rem; }
+.stage-help li + li::before { content: "\2192"; margin-right: 0.6rem; color: var(--muted); }
+.stage-filter { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+.stage-filter[hidden] { display: none; }
+.chip { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.4rem 0.95rem; border-radius: 999px; border: 2px solid var(--color-border-strong); background: var(--surface);
+	color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+.chip:hover { border-color: var(--primary); }
+.chip[aria-pressed="true"] { background: var(--color-text); border-color: var(--color-text); color: var(--color-on-color); }
+.chip-count { min-width: 1.5rem; padding: 0 0.35rem; border-radius: 999px; background: var(--color-surface-muted); font-size: 0.8rem; text-align: center; }
+.chip[aria-pressed="true"] .chip-count { background: var(--overlay-3); }
+.chip-new[aria-pressed="true"] { background: var(--color-info-text); border-color: var(--color-info-text); }
+.chip-interviewing[aria-pressed="true"] { background: var(--color-warning-text); border-color: var(--color-warning-text); }
+.chip-approved[aria-pressed="true"] { background: var(--color-success-text); border-color: var(--color-success-text); }
+.chip-rejected[aria-pressed="true"] { background: var(--color-error-text); border-color: var(--color-error-text); }
+
+/* --- admin: more colour --- */
+.admin-sidebar { background: linear-gradient(180deg, var(--ink-950) 0%, hsl(255 26% 17%) 100%); }
+.stat-card { border-top: 4px solid var(--color-primary); }
+.stat-card .stat-icon { background: var(--color-primary-soft); color: var(--color-primary); }
+.stat-card .stat-value { color: var(--color-primary); }
+/* the icon colour says what kind of task it is; the words next to it say the same (never colour alone) */
+.todo-icon.tone-warning { background: var(--color-warning-soft); color: var(--color-warning-text); }
+.todo-icon.tone-info { background: var(--color-info-soft); color: var(--color-info-text); }
+.todo-icon.tone-error { background: var(--color-error-soft); color: var(--color-error-text); }
+/* :has() - MDN Web Docs (no date) :has(). https://developer.mozilla.org/en-US/docs/Web/CSS/:has */
+.admin-table tbody tr:has(.badge-new) td:first-child, .admin-table tbody tr:has(.badge-pending) td:first-child { box-shadow: inset 4px 0 0 var(--color-info); }
+
+/* ==========================================================
+   STATUS COLOURS BY MEANING (one block for every badge on the site)
+   success = good / done, info = in progress, warning = waiting for someone, error = refused,
+   neutral = closed or just a category. Words are always inside the badge, and success / error also
+   get a tick or a cross, so colour is never the only signal (WCAG 1.4.1).
+   The "/ ''" part gives the symbol an empty text alternative, so screen readers only read the word.
+   Source: W3C (2023) Understanding SC 1.4.1 Use of Color. https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html
+           MDN Web Docs (no date) content - alternative text. https://developer.mozilla.org/en-US/docs/Web/CSS/content
+   ========================================================== */
+.badge-available, .badge-approved, .badge-verified { background: var(--color-success-soft); color: var(--color-success-text); }
+.badge-new, .badge-reserved, .badge-staff { background: var(--color-info-soft); color: var(--color-info-text); }
+.badge-pending, .badge-interviewing, .badge-unverified { background: var(--color-warning-soft); color: var(--color-warning-text); }
+.badge-rejected { background: var(--color-error-soft); color: var(--color-error-text); }
+.badge-adopted, .badge-member, .badge-private { background: var(--color-neutral-soft); color: var(--color-text-muted); }
+.badge-admin { background: var(--color-primary-strong); color: var(--color-on-color); }
+.badge-available::before, .badge-approved::before { content: "\2713\00a0"; content: "\2713\00a0" / ""; }
+.badge-rejected::before { content: "\2715\00a0"; content: "\2715\00a0" / ""; }
+
+/* alerts: an icon as well as the colour */
+.alert { display: flex; gap: 0.6rem; align-items: flex-start; }
+.alert::before { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 50%;
+	font-weight: 800; font-size: 0.9rem; color: var(--color-on-color); }
+.alert-success::before { content: "\2713"; content: "\2713" / ""; background: var(--color-success); }
+.alert-error::before { content: "!"; content: "!" / ""; background: var(--color-error); }
+.alert-warning::before { content: "!"; content: "!" / ""; background: var(--color-warning-text); }
+.alert > * { flex: 1; }
+
+/* 10%: the orange call-to-action. Used for ONE main action per page only. */
+.btn-cta { background: var(--color-cta); border-color: var(--color-cta); color: var(--color-on-cta); }
+.btn-cta:hover { background: var(--color-cta-hover); border-color: var(--color-cta-hover); color: var(--color-on-cta); }
+
+/* focus ring: blue on light areas, white on dark ones (the blue would be hard to see on teal) */
+.admin-sidebar :focus-visible, .site-footer :focus-visible { outline-color: var(--color-focus-on-dark); }
+
+/* ==========================================================
+   YOUTHFUL TOUCHES - tight bold headings (fashion style), violet progress, pastel stat chips
+   Pastels are tints with the same lightness, so several of them can be used together without clashing.
+   Source: MDN Web Docs (no date) letter-spacing; radial-gradient(). https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/radial-gradient
+   ========================================================== */
+h1, h2 { letter-spacing: -0.025em; }
+h1 { font-weight: 800; }
+.btn { font-weight: 700; }
+
+/* progress bar of a request: the reached steps are violet */
+.tracker li.done::before, .tracker li.current::before { background: var(--color-cta); }
+.tracker li.done .tracker-dot, .tracker li.current .tracker-dot { border-color: var(--color-cta); }
+.tracker li.done .tracker-dot { background: var(--color-cta); color: var(--color-on-cta); }
+
+/* home page banner: the same pastel aura as the account pages */
+.hero { background: radial-gradient(110% 130% at 0% 0%, var(--violet-100) 0%, transparent 55%),
+	radial-gradient(110% 130% at 100% 100%, var(--pink-100) 0%, transparent 55%), var(--color-surface); border: 1px solid var(--color-surface); }
+.hero h1 { letter-spacing: -0.035em; }
+
+/* statistic boxes (home + admin): one pastel each - lavender, peach, sky, mint */
+.stat:nth-child(4n+1), .stat-card:nth-child(4n+1) { --chip: var(--violet-100); --chip-text: var(--violet-700); }
+.stat:nth-child(4n+2), .stat-card:nth-child(4n+2) { --chip: var(--peach-100); --chip-text: var(--peach-700); }
+.stat:nth-child(4n+3), .stat-card:nth-child(4n+3) { --chip: var(--sky-100); --chip-text: var(--sky-700); }
+.stat:nth-child(4n+4), .stat-card:nth-child(4n+4) { --chip: var(--mint-100); --chip-text: var(--mint-700); }
+.stat { border-top: 0; background: linear-gradient(180deg, var(--chip) 0%, var(--color-surface) 75%); }
+.stat .stat-number { color: var(--color-text); }
+.stat-card { border-top: 0; }
+.stat-card .stat-icon { background: var(--chip); color: var(--chip-text); }
+.stat-card .stat-value { color: var(--color-text); }
+
+/* tiles on My account: soft pastel icon, ink text, role colour line */
+.tile { border-bottom-width: 3px; }
+.tile-value { color: var(--color-text); }
+
+/* ==========================================================
+   BOLD ACCENTS - stronger focal points, still 60-30-10
+   Emphasis works best when only a few things stand out (isolation effect), so the loud colour is kept for:
+   the ONE main button (violet -> magenta gradient with a glow), the home banner (dark "night" block),
+   a lime highlighter on key words, the active menu item and a thin brand stripe on the header.
+   Every text / background pair here was checked: white on violet 6.7:1, on magenta 5.3:1,
+   lime on ink 13.8:1, white on night 16.5:1 (WCAG 2.2 AA).
+   Sources: MDN Web Docs (no date) linear-gradient(); radial-gradient(); border-image; box-decoration-break; ::selection; drop-shadow().
+              https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient
+              https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/border-image
+              https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/box-decoration-break
+              https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::selection
+              https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/filter-function/drop-shadow
+            Nielsen Norman Group - Gordon, K. (2021) Using Color to Enhance Your Design. https://www.nngroup.com/articles/color-enhance-design/
+   ========================================================== */
+/* thin brand stripe across the top of the header and the footer */
+.site-header { border-top: 4px solid transparent; border-image: var(--gradient-brand) 1; }
+.site-footer { border-top: 4px solid transparent; border-image: var(--gradient-brand) 1; }
+
+/* active menu item: ink pill with lime words */
+.main-nav a[aria-current="page"] { color: var(--color-pop); }
+
+/* main action: gradient + glow, lifts a little on hover */
+.btn-cta, .main-nav .btn { background: var(--gradient-cta); border-color: transparent; color: var(--color-on-cta); box-shadow: var(--glow-cta);
+	transition: transform 0.15s, box-shadow 0.15s; }
+.btn-cta:hover, .main-nav .btn:hover { background: var(--gradient-cta-hover); border-color: transparent; color: var(--color-on-cta); transform: translateY(-2px);
+	box-shadow: 0 12px 26px -6px hsl(290 80% 45% / 0.6); }
+
+/* lime highlighter behind key words (box-decoration-break keeps it right when the words wrap) */
+.highlight { background: linear-gradient(transparent 55%, var(--color-highlight) 55%, var(--color-highlight) 92%, transparent 92%);
+	-webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 0.1em; }
+::selection { background: var(--color-highlight); color: var(--color-on-pop); }
+
+/* home banner: dark night block with violet / magenta glows - the first thing the eye lands on */
+.hero { background: radial-gradient(60% 80% at 10% 0%, hsl(255 88% 63% / 0.55) 0%, transparent 70%),
+	radial-gradient(55% 75% at 95% 100%, hsl(322 80% 50% / 0.45) 0%, transparent 70%), var(--night-900);
+	border: 0; color: var(--white); box-shadow: var(--shadow-lg); }
+.hero h1 { color: var(--white); }
+.hero p { color: var(--color-on-dark); }
+/* on the dark block the highlighter becomes lime words with a lime underline (15:1 on night) */
+.hero .highlight { color: var(--color-pop); background: linear-gradient(transparent 88%, var(--color-pop) 88%); padding: 0; }
+.hero .btn-outline { color: var(--white); border-color: var(--white); background: transparent; }
+.hero .btn-outline:hover { background: var(--white); color: var(--color-text); }
+.hero :focus-visible { outline-color: var(--color-focus-on-dark); }
+/* the drawing already has its own cream circle, so it stays clear on the dark block */
+.hero-image { filter: drop-shadow(0 18px 30px hsl(255 60% 5% / 0.5)); }
+
+/* account / requests banners: stronger aura + a lime glow in the corner */
+.role-hero { background: radial-gradient(120% 140% at 0% 0%, var(--role-a) 0%, transparent 60%),
+	radial-gradient(120% 140% at 100% 100%, var(--role-b) 0%, transparent 60%),
+	radial-gradient(30% 50% at 100% 0%, hsl(78 88% 62% / 0.45) 0%, transparent 100%), var(--color-surface); }
+.role-chip { background: var(--color-primary); color: var(--color-pop); }
+.avatar { box-shadow: 0 0 0 4px var(--color-surface), 0 0 0 7px var(--color-pop); }
+
+/* stat numbers: bigger and heavier so they read at a glance */
+.stat .stat-number, .stat-card .stat-value { font-weight: 800; letter-spacing: -0.03em; }
+.count-badge { box-shadow: 0 0 0 2px var(--color-primary); }
+
+/* stronger role auras (deeper tints) and a fresh coral instead of brown for pet owners.
+   Ink text stays 10:1 or more on every tint; the small grey line uses ink-700 so it keeps 4.5:1 too. */
+:root {
+	--role-adopter-a: var(--violet-200);       --role-adopter-b: hsl(340 95% 85%);
+	--role-owner-a: hsl(22 100% 82%);          --role-owner-b: hsl(48 100% 72%);   --role-owner: hsl(6 82% 46%);   /* white on coral 5.0:1 */
+	--role-staff-a: hsl(200 95% 82%);          --role-staff-b: hsl(155 60% 76%);
+	--role-admin-a: var(--violet-200);         --role-admin-b: hsl(200 95% 82%);
+}
+.role-hero .role-hero-meta, .role-hero .meta { color: var(--ink-700); }
+.tile { border-bottom-width: 4px; }

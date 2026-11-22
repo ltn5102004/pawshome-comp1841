@@ -1,0 +1,101 @@
+%% PawsHome - Entity-Relationship Diagram (database petadopt, 9 tables), Crow's Foot notation.
+%% How to draw: open https://mermaid.live/ , paste this file, then Actions -> PNG / SVG.
+%% Source: Mermaid (no date) Entity Relationship Diagrams. https://mermaid.js.org/syntax/entityRelationshipDiagram.html
+erDiagram
+    SPECIES ||--o{ PET : "classifies (RESTRICT)"
+    SHELTER |o--o{ PET : "cares for (RESTRICT, NULL = private)"
+    USER |o--o{ PET : "lists (SET NULL)"
+    SHELTER |o--o{ USER : "employs staff (SET NULL)"
+    USER ||--o| ADOPTERPROFILE : "has (CASCADE)"
+    USER ||--o{ ADOPTIONREQUEST : "sends (CASCADE)"
+    PET ||--o{ ADOPTIONREQUEST : "receives (CASCADE)"
+    USER ||--o{ FAVOURITE : "saves (CASCADE)"
+    PET ||--o{ FAVOURITE : "is saved in (CASCADE)"
+
+    USER {
+        int id PK
+        varchar name
+        varchar email UK
+        varchar password "bcrypt hash"
+        enum role "member / admin"
+        int shelterid FK "NULL unless shelter staff"
+        date datejoined
+    }
+    SHELTER {
+        int id PK
+        varchar name
+        varchar city
+        varchar email
+        varchar phone
+        tinyint verified
+    }
+    SPECIES {
+        int id PK
+        varchar name UK
+    }
+    PET {
+        int id PK
+        varchar name
+        int age
+        enum gender
+        text description
+        varchar image
+        varchar imagecredit
+        varchar imagesource
+        varchar breed
+        enum size
+        enum energy
+        tinyint vaccinated
+        tinyint neutered
+        varchar healthnotes
+        tinyint goodwithkids
+        tinyint goodwithdogs
+        tinyint goodwithcats
+        tinyint apartmentok
+        enum status "Available / Reserved / Adopted"
+        enum approval "Pending / Approved / Rejected"
+        varchar reviewnote
+        date dateadded
+        int speciesid FK
+        int shelterid FK "NULL = private rehoming"
+        varchar city
+        int userid FK
+    }
+    ADOPTIONREQUEST {
+        int id PK
+        text message
+        date requestdate
+        enum status "New / Interviewing / Approved / Rejected"
+        date interviewdate
+        date decisiondate
+        int petid FK "UNIQUE (petid, userid)"
+        int userid FK
+    }
+    ADOPTERPROFILE {
+        int userid PK, FK "1:1 with USER"
+        enum hometype
+        tinyint householdagrees
+        enum experience
+        varchar otherpets
+        enum budget
+        datetime updated
+    }
+    FAVOURITE {
+        int userid PK, FK
+        int petid PK, FK
+        datetime datesaved
+    }
+    MESSAGE {
+        int id PK
+        varchar name
+        varchar email
+        varchar subject
+        text body
+        datetime datesent
+    }
+    LOGINATTEMPT {
+        int id PK
+        varchar email
+        varchar ip
+        datetime attempted
+    }

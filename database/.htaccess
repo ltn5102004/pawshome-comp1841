@@ -1,0 +1,5 @@
+# These files are only used by the PHP code on the server (PHP reads them from the disk, not through the web
+# address), so nobody should be able to open them by typing their address in a browser.
+# Source: Apache Software Foundation (no date) Apache HTTP Server 2.4 - mod_authz_core: Require all denied.
+#         https://httpd.apache.org/docs/2.4/mod/mod_authz_core.html
+Require all denied
