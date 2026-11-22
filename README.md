@@ -62,7 +62,7 @@ css/style.css, js/main.js                       responsive design, front-end val
 database/petadopt.sql                           database export
 database/add_passwordreset.sql                  adds the passwordreset table to an older database
 mail-log/                                       emails written on localhost (outbox.log, blocked from the web)
-docs/                                           ERD (erd.dbml for dbdiagram.io, erd.mmd for Mermaid), navigation diagram, colour system (colour-system.md)
+docs/                                           ERD (erd.drawio for draw.io, erd.dbml for dbdiagram.io, erd.mmd for Mermaid), navigation diagram, colour system (colour-system.md)
 ```
 
 ## References
@@ -75,6 +75,7 @@ Harvard style, alphabetical by author. Accessed dates should be the date the pag
 - Butler, T. and Yank, K. (2017) *PHP & MySQL: Novice to Ninja*. 6th edn. Collingwood: SitePoint. (generic query / insert / update / delete / findById / findAll functions, output buffering templates, many-to-many join table)
 - Coyier, C. (2011) *Responsive Data Tables*. CSS-Tricks. Available at: https://css-tricks.com/responsive-data-tables/ (Accessed: 9 November 2026).
 - Creative Commons (no date) *Recommended practices for attribution*. Available at: https://wiki.creativecommons.org/wiki/Recommended_practices_for_attribution (Accessed: 3 November 2026).
+- draw.io (no date) *Entity relationship tables in draw.io*. Available at: https://www.drawio.com/blog/entity-relationship-tables (Accessed: 23 November 2026). (docs/erd.drawio)
 - dbdiagram.io (no date) *DBML - Database Markup Language*. Available at: https://dbml.dbdiagram.io/docs/ (Accessed: 22 November 2026). (docs/erd.dbml)
 - Google (no date) *Material Design 3: Color roles*. Available at: https://m3.material.io/styles/color/roles (Accessed: 9 November 2026).
 - Google (no date) *Material Design 3: Design tokens*. Available at: https://m3.material.io/foundations/design-tokens/overview (Accessed: 9 November 2026).
