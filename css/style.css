@@ -1726,14 +1726,18 @@ a.cell-sub { color: var(--primary); }
 .badge-available::before, .badge-approved::before { content: "\2713\00a0"; content: "\2713\00a0" / ""; }
 .badge-rejected::before { content: "\2715\00a0"; content: "\2715\00a0" / ""; }
 
-/* alerts: an icon as well as the colour */
-.alert { display: flex; gap: 0.6rem; align-items: flex-start; }
-.alert::before { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 50%;
+/* alerts: an icon as well as the colour.
+   The icon is positioned in the left padding, so text, links and <strong> inside the alert flow as one paragraph.
+   (Fixed 22 Nov 2026: a flex layout here split "text <a>link</a> text" into separate columns.)
+   Source: MDN Web Docs (no date) position. https://developer.mozilla.org/en-US/docs/Web/CSS/position */
+.alert { position: relative; padding-left: 2.9rem; }
+.alert::before { position: absolute; left: 0.9rem; top: 0.85rem; display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 50%;
 	font-weight: 800; font-size: 0.9rem; color: var(--color-on-color); }
+.review-warning { padding-left: 2.6rem; }
+.review-warning::before { left: 0.7rem; top: 0.5rem; }
 .alert-success::before { content: "\2713"; content: "\2713" / ""; background: var(--color-success); }
 .alert-error::before { content: "!"; content: "!" / ""; background: var(--color-error); }
 .alert-warning::before { content: "!"; content: "!" / ""; background: var(--color-warning-text); }
-.alert > * { flex: 1; }
 
 /* 10%: the orange call-to-action. Used for ONE main action per page only. */
 .btn-cta { background: var(--color-cta); border-color: var(--color-cta); color: var(--color-on-cta); }
