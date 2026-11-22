@@ -1,4 +1,4 @@
-%% PawsHome - Entity-Relationship Diagram (database petadopt, 9 tables), Crow's Foot notation.
+%% PawsHome - Entity-Relationship Diagram (database petadopt, 10 tables), Crow's Foot notation.
 %% How to draw: open https://mermaid.live/ , paste this file, then Actions -> PNG / SVG.
 %% Source: Mermaid (no date) Entity Relationship Diagrams. https://mermaid.js.org/syntax/entityRelationshipDiagram.html
 erDiagram
@@ -11,6 +11,7 @@ erDiagram
     PET ||--o{ ADOPTIONREQUEST : "receives (CASCADE)"
     USER ||--o{ FAVOURITE : "saves (CASCADE)"
     PET ||--o{ FAVOURITE : "is saved in (CASCADE)"
+    USER ||--o{ PASSWORDRESET : "asks for (CASCADE)"
 
     USER {
         int id PK
@@ -98,4 +99,12 @@ erDiagram
         varchar email
         varchar ip
         datetime attempted
+    }
+    PASSWORDRESET {
+        int id PK
+        int userid FK
+        char tokenhash UK "SHA-256 of the emailed token"
+        datetime expires "30 minutes"
+        tinyint used
+        datetime created
     }

@@ -1,4 +1,4 @@
-// PawsHome - Entity-Relationship Diagram (database: petadopt, 9 tables)
+// PawsHome - Entity-Relationship Diagram (database: petadopt, 10 tables)
 // Written from the live schema (SHOW CREATE TABLE, 22 Nov 2026).
 // How to draw: open https://dbdiagram.io/d , paste this whole file, then Export -> PNG for the report (Figure 3).
 // Source: dbdiagram.io (no date) DBML - Database Markup Language documentation. https://dbml.dbdiagram.io/docs/
@@ -115,6 +115,16 @@ Table loginattempt {
   }
 }
 
+Table passwordreset {
+  id int [pk, increment]
+  userid int [not null]
+  tokenhash char(64) [not null, unique, note: 'SHA-256 of the emailed token']
+  expires datetime [not null, note: '30 minutes']
+  used tinyint(1) [not null, default: 0]
+  created datetime [not null]
+  Note: 'Forgot your password? links (one-time)'
+}
+
 // ---------- relationships (> many-to-one, - one-to-one) ----------
 Ref: pet.speciesid > species.id [delete: restrict]
 Ref: pet.shelterid > shelter.id [delete: restrict]
@@ -125,3 +135,4 @@ Ref: adoptionrequest.userid > user.id [delete: cascade]
 Ref: favourite.userid > user.id [delete: cascade]
 Ref: favourite.petid > pet.id [delete: cascade]
 Ref: adopterprofile.userid - user.id [delete: cascade]
+Ref: passwordreset.userid > user.id [delete: cascade]
