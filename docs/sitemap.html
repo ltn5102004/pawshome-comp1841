@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PawsHome navigation structure</title>
+<style>
+  body { margin: 0; background: #fff; font-family: Arial, Helvetica, sans-serif; color: #000; }
+  #wrap { display: inline-block; padding: 18px 22px 22px; }
+  .home { margin: 0 auto; width: 210px; text-align: center; border: 3px solid #000; border-radius: 30px; padding: 10px; font-weight: 800; font-size: 19px; }
+  .home small, .box small { display: block; font-weight: 400; font-size: 14px; margin-top: 2px; }
+  /* one line down from Home, one line across, one line down into each column */
+  .stem { width: 3px; height: 22px; background: #000; margin: 0 auto; }
+  .bar { height: 3px; background: #000; margin: 0 calc(100% / 6); }
+  .cols { display: grid; grid-template-columns: repeat(3, 290px); gap: 26px; }
+  .col { display: flex; flex-direction: column; align-items: center; }
+  .col > .stem { height: 22px; }
+  .group { width: 100%; box-sizing: border-box; border: 3px solid #000; padding: 10px 12px 14px; }
+  .group h2 { margin: 0 0 10px; font-size: 17px; text-align: center; letter-spacing: 0.04em; }
+  .box { border: 2px solid #000; padding: 7px 8px; text-align: center; font-weight: 700; font-size: 16px; background: #fff; }
+  .arrow { text-align: center; font-size: 18px; line-height: 20px; height: 20px; }
+  .gap { height: 8px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="home">Home<small>index.php</small></div>
+  <div class="stem"></div>
+  <div class="bar"></div>
+  <div class="cols">
+    <div class="col"><div class="stem"></div><div class="group">
+      <h2>PUBLIC (no login)</h2>
+      <div class="box">Find a pet<small>pets.php (filters)</small></div><div class="arrow">↓</div>
+      <div class="box">Pet details<small>pet.php</small></div><div class="gap"></div>
+      <div class="box">Shelters<small>shelters.php</small></div><div class="gap"></div>
+      <div class="box">Contact the admin<small>contact.php</small></div><div class="gap"></div>
+      <div class="box">Register / Log in<small>register.php, login.php</small></div><div class="arrow">↓</div>
+      <div class="box">Forgot password<small>forgot / resetpassword.php</small></div>
+    </div></div>
+    <div class="col"><div class="stem"></div><div class="group">
+      <h2>MEMBERS (logged in)</h2>
+      <div class="box">My account<small>myaccount.php</small></div><div class="arrow">↓</div>
+      <div class="box">Rehome a pet<small>addpet.php</small></div><div class="gap"></div>
+      <div class="box">Edit / delete my pet<small>editpet.php, deletepet.php</small></div><div class="gap"></div>
+      <div class="box">Adoption requests<small>send, answer, withdraw</small></div><div class="gap"></div>
+      <div class="box">Favourites<small>favourite.php</small></div><div class="gap"></div>
+      <div class="box">Profile, adopter profile<small>profile.php, adopterprofile.php</small></div><div class="gap"></div>
+      <div class="box">Log out<small>logout.php</small></div>
+    </div></div>
+    <div class="col"><div class="stem"></div><div class="group">
+      <h2>ADMIN (admin role)</h2>
+      <div class="box">Dashboard<small>admin/index.php</small></div><div class="arrow">↓</div>
+      <div class="box">Review listings<small>approvals.php</small></div><div class="gap"></div>
+      <div class="box">Pets, Requests<small>pets.php, requests.php</small></div><div class="gap"></div>
+      <div class="box">Shelters, Species<small>shelters.php, species.php</small></div><div class="gap"></div>
+      <div class="box">Users, Messages<small>users.php, messages.php</small></div>
+    </div></div>
+  </div>
+</div>
+</body>
+</html>

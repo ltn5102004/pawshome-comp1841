@@ -2,102 +2,81 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>PawsHome wireframes</title>
+<title>PawsHome basic wireframes</title>
 <style>
-  body { margin: 0; background: #fff; font-family: "Comic Sans MS", "Chalkboard SE", Arial, sans-serif; color: #222; }
-  #wrap { display: inline-block; padding: 18px; }
-  h1 { font: 700 20px Arial, sans-serif; margin: 0 0 12px; }
-  .grid { display: grid; grid-template-columns: repeat(3, 360px); gap: 22px; align-items: start; }
-  .frame { border: 2px solid #222; border-radius: 6px; background: #fff; }
-  .frame h2 { font: 700 13px Arial, sans-serif; margin: 0; padding: 5px 8px; border-bottom: 2px solid #222; background: #eee; }
-  .page { padding: 8px; display: grid; gap: 6px; }
-  .box { border: 1.5px solid #555; border-radius: 4px; padding: 4px 6px; font-size: 11px; background: #fafafa; }
-  .dark { background: #ddd; }
-  .x { position: relative; background: repeating-linear-gradient(45deg, #f2f2f2 0 6px, #e4e4e4 6px 12px); min-height: 50px; display: flex; align-items: center; justify-content: center; }
-  .row { display: flex; gap: 6px; }
+  body { margin: 0; background: #fff; font-family: Arial, Helvetica, sans-serif; color: #000; }
+  #wrap { display: inline-block; padding: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 300px); gap: 22px; align-items: start; }
+  .frame h2 { font-size: 15px; margin: 0 0 6px; }
+  .page { border: 2.5px solid #000; padding: 8px; display: grid; gap: 8px; height: 330px; align-content: start; }
+  .phone .page { width: 150px; height: 300px; border-radius: 14px; }
+  .bar { border: 2px solid #000; height: 22px; display: flex; align-items: center; padding: 0 6px; font-size: 11px; font-weight: 700; }
+  .bar span { margin-left: auto; letter-spacing: 3px; }
+  /* image placeholder: a box with an X */
+  .x { border: 2px solid #000; background:
+        linear-gradient(to top right, transparent calc(50% - 1px), #000 calc(50% - 1px), #000 calc(50% + 1px), transparent calc(50% + 1px)),
+        linear-gradient(to bottom right, transparent calc(50% - 1px), #000 calc(50% - 1px), #000 calc(50% + 1px), transparent calc(50% + 1px)); }
+  .row { display: flex; gap: 8px; }
   .row > * { flex: 1; }
-  .row > .btn { flex: 0 0 auto; align-self: center; }
-  .btn { border: 1.5px solid #222; border-radius: 12px; padding: 2px 8px; font-size: 10px; display: inline-block; background: #fff; }
-  .btn.fill { background: #222; color: #fff; }
-  .line { height: 6px; background: #ccc; border-radius: 3px; margin: 3px 0; }
-  .short { width: 60%; }
-  .mobile { width: 170px; }
-  .note { font: italic 11px Arial, sans-serif; color: #444; padding: 4px 8px 8px; }
+  .line { height: 7px; background: #000; opacity: .25; }
+  .w60 { width: 60%; } .w40 { width: 40%; } .w80 { width: 80%; }
+  .field { border: 2px solid #000; height: 18px; }
+  .btn { border: 2px solid #000; height: 18px; width: 80px; border-radius: 10px; }
+  .btn.fill { background: #000; }
+  .side { border: 2px solid #000; width: 60px; }
 </style>
 </head>
 <body>
 <div id="wrap">
-<h1>PawsHome - wireframes (desktop and phone)</h1>
 <div class="grid">
 
-  <div class="frame"><h2>1. Home (index.php)</h2><div class="page">
-    <div class="box dark row"><span>Logo</span><span>Home · Find a pet · Shelters · Rehome · Contact</span><span class="btn">Log in</span></div>
-    <div class="box row"><div><b>Every pet deserves a loving home</b><div class="line"></div><div class="line short"></div><span class="btn fill">Find a pet</span> <span class="btn">Rehome a pet</span></div><div class="x">illustration</div></div>
-    <div class="row"><div class="box">32 pets</div><div class="box">23 waiting</div><div class="box">3 adopted</div><div class="box">15 shelters</div></div>
-    <div class="row"><div class="x">pet card</div><div class="x">pet card</div><div class="x">pet card</div></div>
-    <div class="box dark">Footer: links · account · contact</div>
-  </div><div class="note">Hero with one main button; statistics; newest pets.</div></div>
-
-  <div class="frame"><h2>2. Find a pet (pets.php)</h2><div class="page">
-    <div class="box dark">Header + menu</div>
-    <div class="box"><b>Filters</b><div class="row"><span class="box">Search</span><span class="box">Species ▾</span><span class="box">Shelter ▾</span><span class="box">Status ▾</span></div><span class="btn">More filters ▸</span> <span class="btn fill">Search</span></div>
-    <div class="box">7 pets found</div>
-    <div class="row"><div class="x">photo<br>name · badge</div><div class="x">photo<br>name · badge</div><div class="x">photo<br>name · badge</div><div class="x">photo<br>name · badge</div></div>
-    <div class="box" style="text-align:center">‹ 1 2 3 ›  pagination (8 per page)</div>
-  </div><div class="note">Filters stay in the URL, so results can be shared and paged.</div></div>
-
-  <div class="frame"><h2>3. Pet details (pet.php?id=)</h2><div class="page">
-    <div class="box dark">Header + menu</div>
-    <div class="box">Find a pet / Biscuit (breadcrumb)</div>
-    <div class="row"><div class="x" style="min-height:90px">pet photo<br>+ photo credit</div><div class="box"><b>Biscuit</b> <span class="btn">Reserved</span><div class="row"><span class="box">Species</span><span class="box">Age</span></div><div class="row"><span class="box">Size</span><span class="box">Energy</span></div><span class="btn">♡ Save</span></div></div>
-    <div class="box">About · health · good with… · shelter card (JOIN)</div>
-    <div class="box"><b>Adopt Biscuit</b><div class="line"></div><span class="btn fill">Send adoption request</span></div>
-  </div><div class="note">One page joins pet, species, shelter and owner data.</div></div>
-
-  <div class="frame"><h2>4. Rehome a pet (addpet.php / editpet.php)</h2><div class="page">
-    <div class="box dark">Header + menu</div>
-    <div class="box" style="border-color:#000"><b>! Please fix the following:</b> list of errors</div>
-    <div class="box">Pet name *<div class="line"></div></div>
-    <div class="row"><div class="box">Species * ▾</div><div class="box">Age *</div></div>
-    <div class="box">Gender * ( ) Male ( ) Female</div>
-    <div class="box">Description *<div class="line"></div><div class="line"></div></div>
-    <div class="box">Health &amp; personality · good with…</div>
-    <div class="box">Photo [Choose file] <span class="x" style="min-height:30px;display:inline-flex;width:60px">preview</span></div>
-    <div><span class="btn fill">Add pet</span> <span class="btn">Cancel</span></div>
-  </div><div class="note">Error summary at the top; labels on every field.</div></div>
-
-  <div class="frame"><h2>5. My account (myaccount.php)</h2><div class="page">
-    <div class="box dark">Header + menu</div>
-    <div class="box row"><span class="x" style="min-height:34px;max-width:40px">AN</span><div><b>Hello, Anna</b> <span class="btn">Pet owner</span><div class="line short"></div></div><span class="btn">Edit profile</span></div>
-    <div class="row"><div class="box">2 requests</div><div class="box">5 pets</div><div class="box">5 sent</div><div class="box">4 favs</div></div>
-    <div class="box"><b>Next steps</b><div class="line"></div></div>
-    <div class="box"><b>Pets I have listed</b> table → cards on phones</div>
-    <div class="box"><b>My adoption requests</b> New › Interview › Decision <span class="btn">Withdraw</span></div>
-  </div><div class="note">Sections are ordered by role (owner, adopter, staff).</div></div>
-
-  <div class="frame"><h2>6. Admin dashboard (admin/index.php)</h2><div class="page">
-    <div class="row"><div class="box dark" style="max-width:80px;min-height:150px">Sidebar<br>Dashboard<br>Review (2)<br>Requests (2)<br>Pets<br>Shelters<br>Species<br>Users<br>Messages<br>Log out</div>
-    <div style="display:grid;gap:6px"><div class="row"><div class="box">33 pets</div><div class="box">11 requests</div><div class="box">6 users</div></div>
-    <div class="box"><b>Needs your attention</b><div class="line"></div><div class="line"></div></div>
-    <div class="row"><div class="box">Latest requests</div><div class="box">Newest pets</div></div></div></div>
-  </div><div class="note">Counts link straight to the list that needs work.</div></div>
-
-  <div class="frame mobile"><h2>7. Phone: menu</h2><div class="page">
-    <div class="box dark row"><span>Logo</span><span class="btn" style="flex:0">≡</span></div>
-    <div class="box">Home</div><div class="box">Find a pet</div><div class="box">Shelters</div><div class="box">Rehome a pet</div><div class="box">Contact</div><div class="box">Log in</div>
+  <div class="frame"><h2>1. Home</h2><div class="page">
+    <div class="bar">Logo<span>☰ menu</span></div>
+    <div class="row"><div><div class="line"></div><div class="line w60" style="margin-top:6px"></div><div class="btn fill" style="margin-top:10px"></div></div><div class="x" style="height:80px"></div></div>
+    <div class="row"><div class="x" style="height:60px"></div><div class="x" style="height:60px"></div><div class="x" style="height:60px"></div></div>
+    <div class="bar">Footer</div>
   </div></div>
 
-  <div class="frame mobile"><h2>8. Phone: pet list</h2><div class="page">
-    <div class="box dark row"><span>Logo</span><span class="btn" style="flex:0">≡</span></div>
-    <div class="box">Filters (stacked)</div>
-    <div class="x">pet card</div><div class="x">pet card</div><div class="x">pet card</div>
+  <div class="frame"><h2>2. Find a pet (list + filters)</h2><div class="page">
+    <div class="bar">Logo<span>☰ menu</span></div>
+    <div class="row"><div class="field"></div><div class="field"></div><div class="field"></div></div>
+    <div class="row"><div class="x" style="height:70px"></div><div class="x" style="height:70px"></div><div class="x" style="height:70px"></div></div>
+    <div class="row"><div class="x" style="height:70px"></div><div class="x" style="height:70px"></div><div class="x" style="height:70px"></div></div>
+    <div class="line w40" style="margin:0 auto"></div>
   </div></div>
 
-  <div class="frame mobile"><h2>9. Phone: admin table</h2><div class="page">
-    <div class="box dark row"><span>Admin</span><span class="btn" style="flex:0">≡</span></div>
-    <div class="box">Search…</div>
-    <div class="box">PET: Teddy<br>WHERE: York<br>STATUS: Available<br><span class="btn">Edit</span> <span class="btn">Delete</span></div>
-    <div class="box">PET: Bandit<br>…</div>
+  <div class="frame"><h2>3. Pet details</h2><div class="page">
+    <div class="bar">Logo<span>☰ menu</span></div>
+    <div class="row"><div class="x" style="height:110px"></div><div><div class="line"></div><div class="line w80" style="margin-top:8px"></div><div class="line w60" style="margin-top:8px"></div><div class="line w80" style="margin-top:8px"></div></div></div>
+    <div class="line"></div><div class="line w80"></div>
+    <div class="field" style="height:40px"></div>
+    <div class="btn fill"></div>
+  </div></div>
+
+  <div class="frame"><h2>4. Add / edit pet (form)</h2><div class="page">
+    <div class="bar">Logo<span>☰ menu</span></div>
+    <div class="line w40"></div><div class="field"></div>
+    <div class="row"><div class="field"></div><div class="field"></div></div>
+    <div class="line w40"></div><div class="field" style="height:40px"></div>
+    <div class="row"><div class="x" style="height:45px;flex:0 0 60px"></div><div class="field"></div></div>
+    <div class="row"><div class="btn fill" style="flex:0 0 80px"></div><div class="btn" style="flex:0 0 80px"></div></div>
+  </div></div>
+
+  <div class="frame"><h2>5. Admin dashboard</h2><div class="page">
+    <div class="row" style="height:310px"><div class="side" style="flex:0 0 60px"></div>
+      <div style="display:grid;gap:8px;align-content:start">
+        <div class="row"><div class="field" style="height:36px"></div><div class="field" style="height:36px"></div><div class="field" style="height:36px"></div></div>
+        <div class="field" style="height:70px"></div>
+        <div class="row"><div class="field" style="height:110px"></div><div class="field" style="height:110px"></div></div>
+      </div></div>
+  </div></div>
+
+  <div class="frame phone"><h2>6. Phone</h2><div class="page">
+    <div class="bar">Logo<span>☰</span></div>
+    <div class="field"></div>
+    <div class="x" style="height:70px"></div>
+    <div class="x" style="height:70px"></div>
+    <div class="x" style="height:70px"></div>
   </div></div>
 
 </div>
